@@ -1,0 +1,2487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Our Garden 🌹 — for Saniya</title>
+<style>
+  /* ============================================================
+     🌹 ROSE GARDEN FOR HER — STYLES
+     ============================================================ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg-page: #f6efe6;
+    --text-main: #4a382e;
+    --text-muted: #8a6d59;
+    --text-heading: #5c3826;
+    --card-bg: rgba(255, 253, 248, 0.92);
+    --card-border: #ebd9c5;
+    --card-shadow: 0 8px 24px rgba(120, 72, 40, 0.08);
+    --rose-pink: #ff9ebb;
+    --rose-deep: #e6395f;
+    --rose-dark: #b82346;
+    --gold: #d4a359;
+    --gold-light: #fbe3a9;
+    --focus-ring: #e6395f;
+  }
+
+  :root[data-theme="dark"] {
+    --bg-page: #191024;
+    --text-main: #f5e8f0;
+    --text-muted: #bfa4b8;
+    --text-heading: #fcecf4;
+    --card-bg: rgba(38, 24, 48, 0.92);
+    --card-border: #4a3258;
+    --card-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
+    --rose-pink: #f285ad;
+    --rose-deep: #ff4d79;
+    --rose-dark: #cc2550;
+    --gold: #e2b76c;
+    --gold-light: #523b20;
+    --focus-ring: #ff759d;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-page);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    transition: background 0.5s ease, color 0.5s ease;
+    overflow-x: hidden;
+  }
+
+  #app {
+    width: 100%;
+    max-width: 480px;
+    padding: 20px 16px 48px;
+    position: relative;
+  }
+
+  /* Top actions (Music, Moonlight, Fullscreen) */
+  #top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .action-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+    color: var(--text-main);
+    font-size: 19px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(120, 72, 40, 0.12);
+    transition: transform 0.2s ease, background 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .action-btn:active { transform: scale(0.92); }
+  .action-btn:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 3px;
+  }
+
+  #preview-banner {
+    display: none;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #b02348;
+    background: #ffe3ec;
+    border: 1px solid #ffb3c9;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    color: var(--text-heading);
+    letter-spacing: 0.5px;
+    font-weight: normal;
+  }
+  header h1 .heart { color: var(--rose-deep); }
+  #for-line {
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  #stage-label {
+    font-size: 14px;
+    color: var(--rose-deep);
+    margin-top: 6px;
+    min-height: 22px;
+    font-weight: 600;
+  }
+
+  /* Scene & Artwork */
+  #scene-wrap {
+    position: relative;
+    margin-top: 10px;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 16px 44px rgba(120, 72, 40, 0.2);
+    border: 6px solid rgba(255, 255, 255, 0.7);
+    transition: border-color 0.5s ease;
+  }
+  :root[data-theme="dark"] #scene-wrap {
+    border-color: rgba(75, 52, 90, 0.7);
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.55);
+  }
+  /* Elegant inner gold border */
+  #scene-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 9px;
+    z-index: 4;
+    border: 1.5px solid rgba(216, 178, 106, 0.65);
+    border-radius: 17px;
+    pointer-events: none;
+  }
+  svg#scene { display: block; width: 100%; height: auto; }
+  #vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(74,42,24,0.24) 100%);
+  }
+  #grain-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.42;
+    z-index: 3;
+  }
+  #fx-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 6;
+  }
+  #glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 2.5s ease;
+    z-index: 1;
+    background: radial-gradient(ellipse at 50% 60%, rgba(255,214,140,0.65), rgba(255,214,140,0) 70%);
+  }
+  #scene-wrap.glorious #glow { opacity: 1; }
+
+  /* Ambient animations */
+  .petal {
+    position: absolute;
+    top: -18px;
+    width: 13px;
+    height: 15px;
+    border-radius: 60% 40% 60% 40%;
+    background: #ffb3cb;
+    opacity: 0.92;
+    animation: petal-fall linear forwards;
+    filter: drop-shadow(0 2px 4px rgba(230,57,95,0.25));
+  }
+  .leafp {
+    position: absolute;
+    top: -14px;
+    width: 11px;
+    height: 14px;
+    border-radius: 60% 10% 60% 10%;
+    background: #d8a05e;
+    opacity: 0.9;
+    animation: petal-fall linear forwards;
+  }
+  @keyframes petal-fall {
+    0% { transform: translateY(-18px) rotate(0deg); opacity: 0; }
+    15% { opacity: 0.95; }
+    100% { transform: translateY(520px) rotate(350deg); opacity: 0; }
+  }
+
+  .heartf {
+    position: absolute;
+    color: #ff6b9d;
+    text-shadow: 0 0 10px rgba(255,107,157,0.7);
+    animation: heartup 4.8s ease-out forwards;
+    font-family: Georgia, serif;
+    user-select: none;
+  }
+  @keyframes heartup {
+    0% { transform: translateY(0) scale(0.6); opacity: 0; }
+    15% { opacity: 1; }
+    100% { transform: translateY(-180px) scale(1.3) rotate(14deg); opacity: 0; }
+  }
+
+  .firefly {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ffe97a;
+    box-shadow: 0 0 12px 4px rgba(255,233,122,0.65);
+    animation: ffly 7s ease-in-out infinite;
+  }
+  @keyframes ffly {
+    0%,100% { transform: translate(0,0); opacity: 0.25; }
+    25% { transform: translate(28px,-32px); opacity: 1; }
+    50% { transform: translate(-16px,-60px); opacity: 0.35; }
+    75% { transform: translate(-32px,-20px); opacity: 1; }
+  }
+  .firefly.heart {
+    animation: heartpulse 2.6s ease-in-out infinite;
+  }
+  @keyframes heartpulse {
+    0%, 100% { opacity: 0.45; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1.22); }
+  }
+
+  .drop {
+    position: absolute;
+    top: 30px;
+    width: 10px;
+    height: 16px;
+    border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+    background: linear-gradient(#85d1f8, #368dce);
+    opacity: 0.95;
+    transition: transform 0.85s ease-in, opacity 0.85s ease-in;
+  }
+  .ripple {
+    position: absolute;
+    width: 28px;
+    height: 12px;
+    border: 3px solid rgba(133,209,248,0.85);
+    border-radius: 50%;
+    animation: ripple 1.3s ease-out forwards;
+  }
+  @keyframes ripple {
+    from { transform: scale(0.4); opacity: 1; }
+    to { transform: scale(2.8); opacity: 0; }
+  }
+
+  .rain {
+    position: absolute;
+    top: -30px;
+    width: 2px;
+    height: 30px;
+    border-radius: 2px;
+    background: linear-gradient(transparent, rgba(175, 212, 245, 0.85));
+    animation: rainfall 0.75s linear infinite;
+  }
+  @keyframes rainfall { to { transform: translateY(580px); } }
+
+  .cloud { animation: drift 36s linear infinite; }
+  .cloud.c2 { animation-duration: 52s; animation-delay: -18s; }
+  .cloud.c3 { animation-duration: 68s; animation-delay: -36s; }
+  @keyframes drift { from { transform: translateX(-120px); } to { transform: translateX(520px); } }
+
+  #birds { animation: flyby 28s linear infinite; }
+  @keyframes flyby { from { transform: translateX(-90px); } to { transform: translateX(490px); } }
+
+  .star { animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+  .smoke { animation: smokeup 4.5s ease-out infinite; transform-box: fill-box; }
+  @keyframes smokeup {
+    0% { transform: translateY(0) scale(0.7); opacity: 0; }
+    25% { opacity: 0.6; }
+    100% { transform: translateY(-48px) scale(1.6); opacity: 0; }
+  }
+
+  #tree-sway {
+    transform-box: view-box;
+    transform-origin: 200px 366px;
+    animation: sway 7s ease-in-out infinite;
+  }
+  @keyframes sway { 0%,100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+
+  #tree-bounce {
+    transition: transform 1.4s ease, filter 1.4s ease;
+    transform-box: view-box;
+    transform-origin: 200px 366px;
+  }
+  #tree-bounce.droopy { transform: scaleY(0.92); filter: saturate(0.8); }
+  #tree-bounce.bounce { animation: bounceT 0.95s ease; }
+  @keyframes bounceT {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.07); }
+    70% { transform: scale(0.98); }
+    100% { transform: scale(1); }
+  }
+
+  #swing {
+    transform-box: fill-box;
+    transform-origin: 50% 0%;
+    animation: swingmove 5.5s ease-in-out infinite;
+  }
+  @keyframes swingmove { 0%,100% { transform: rotate(-3.5deg); } 50% { transform: rotate(3.5deg); } }
+
+  .grass {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: grassway 4.5s ease-in-out infinite;
+  }
+  @keyframes grassway { 0%,100% { transform: skewX(-4deg); } 50% { transform: skewX(5deg); } }
+
+  .pop {
+    animation: pop 0.75s cubic-bezier(0.2, 1.6, 0.4, 1);
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+  .wing-l { transform-box: fill-box; transform-origin: 100% 50%; animation: flap 0.42s ease-in-out infinite alternate; }
+  .wing-r { transform-box: fill-box; transform-origin: 0% 50%; animation: flap 0.42s ease-in-out infinite alternate; }
+  @keyframes flap { from { transform: scaleX(1); } to { transform: scaleX(0.2); } }
+  #bfly1 { animation: wander1 16s ease-in-out infinite; }
+  #bfly2 { animation: wander2 22s ease-in-out infinite; }
+  @keyframes wander1 {
+    0%,100% { transform: translate(0,0); }
+    25% { transform: translate(70px,-46px); }
+    50% { transform: translate(20px,-90px); }
+    75% { transform: translate(-60px,-40px); }
+  }
+  @keyframes wander2 {
+    0%,100% { transform: translate(0,0); }
+    30% { transform: translate(-70px,-60px); }
+    60% { transform: translate(-20px,-110px); }
+    80% { transform: translate(50px,-50px); }
+  }
+
+  .buggy { transform-box: fill-box; transform-origin: center; animation: wiggle 3.2s ease-in-out infinite; }
+  @keyframes wiggle { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+
+  #mailbox { cursor: pointer; }
+  .env-fly {
+    position: absolute;
+    left: 79%;
+    top: -8%;
+    font-size: 32px;
+    z-index: 8;
+    animation: envdrop 2.2s ease-in forwards;
+  }
+  @keyframes envdrop {
+    0% { top: -8%; opacity: 0; transform: rotate(-14deg); }
+    15% { opacity: 1; }
+    100% { top: 58%; opacity: 0; transform: rotate(8deg); }
+  }
+
+  /* Quote & Science Card */
+  #quote {
+    text-align: center;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 15.5px;
+    color: var(--text-muted);
+    margin: 16px 8px 0;
+    line-height: 1.6;
+    min-height: 48px;
+  }
+
+  #fact-card {
+    margin: 14px 4px 0;
+    padding: 16px 18px;
+    border-radius: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+    transition: background 0.4s ease, border-color 0.4s ease;
+  }
+  #fact-head {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+  #fact-title {
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-heading);
+    margin-bottom: 6px;
+  }
+  #fact-text {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-main);
+  }
+
+  /* Timeline & Progress */
+  #timeline { margin: 16px 0 6px; }
+  #timeline-cap {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  #timeline-track {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    padding: 6px 4px 10px;
+    scrollbar-width: thin;
+  }
+  .tdot {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid var(--card-border);
+    background: rgba(255,255,255,0.65);
+    transition: all 0.4s ease;
+  }
+  :root[data-theme="dark"] .tdot { background: rgba(255,255,255,0.08); }
+  .tdot.done {
+    background: radial-gradient(circle at 35% 35%, #ff9ebb, var(--rose-deep));
+    border-color: var(--rose-dark);
+    box-shadow: 0 0 8px rgba(230,57,95,0.55);
+  }
+  .tdot.next {
+    border-color: #64b958;
+    animation: dotpulse 1.8s ease-in-out infinite;
+  }
+  @keyframes dotpulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(100,185,88,0.5); }
+    50% { box-shadow: 0 0 0 6px rgba(100,185,88,0); }
+  }
+
+  #progress-wrap { margin: 6px 0 10px; }
+  #day-text {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  #progress-bar {
+    height: 10px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 99px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.12);
+  }
+  :root[data-theme="dark"] #progress-bar { background: rgba(255,255,255,0.14); }
+  #progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #ffb3cb, var(--rose-deep));
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Water Button */
+  #water-btn {
+    display: block;
+    width: 100%;
+    margin: 14px 0 12px;
+    padding: 17px;
+    font-size: 17.5px;
+    font-weight: 800;
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    background: linear-gradient(135deg, #57b764, #278637);
+    box-shadow: 0 8px 24px rgba(39, 134, 55, 0.4), inset 0 1px 0 rgba(255,255,255,0.35);
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.3s ease, background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  #water-btn::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.45), transparent);
+    transform: skewX(-20deg);
+    animation: btnshine 3.5s ease-in-out infinite;
+  }
+  @keyframes btnshine {
+    0%,60% { left: -60%; }
+    100% { left: 140%; }
+  }
+  #water-btn:active { transform: scale(0.97); }
+  #water-btn:disabled {
+    filter: grayscale(0.5) brightness(1.02);
+    cursor: default;
+    background: #6a8c71;
+    box-shadow: none;
+  }
+  :root[data-theme="dark"] #water-btn:disabled { background: #324338; }
+  #water-btn:disabled::after { display: none; }
+
+  /* Note Box */
+  #note-box {
+    margin-bottom: 14px;
+    background: var(--card-bg);
+    border-radius: 18px;
+    padding: 14px 16px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--card-border);
+  }
+  #note-box label {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  #note-input {
+    width: 100%;
+    min-height: 58px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    color: var(--text-main);
+  }
+  :root[data-theme="dark"] #note-input { background: rgba(255, 255, 255, 0.06); }
+  #note-input:focus {
+    outline: 2px solid var(--rose-pink);
+    border-color: transparent;
+  }
+
+  /* Sealed Milestone Letters */
+  #his-letters, #letters { margin-top: 22px; }
+  #his-letters h2, #letters h2 {
+    font-family: Georgia, serif;
+    font-size: 20px;
+    color: var(--text-heading);
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .letter {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 15px 18px;
+    margin-bottom: 14px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--card-border);
+    position: relative;
+    transition: transform 0.2s ease;
+  }
+  .letter::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 4px;
+    border-radius: 4px;
+    background: linear-gradient(var(--rose-pink), var(--rose-deep));
+  }
+  .letter.locked {
+    opacity: 0.75;
+    background: rgba(230, 220, 210, 0.4);
+    border-style: dashed;
+  }
+  :root[data-theme="dark"] .letter.locked { background: rgba(30, 20, 40, 0.4); }
+  .letter.locked::before { background: #b09e90; }
+  .letter .day {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--rose-dark);
+    margin-bottom: 6px;
+    letter-spacing: 0.4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .letter.locked .day { color: var(--text-muted); }
+  .letter .text {
+    font-size: 14.5px;
+    line-height: 1.65;
+    white-space: pre-line;
+    color: var(--text-main);
+    font-family: Georgia, serif;
+  }
+  #no-letters {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    padding: 12px;
+  }
+
+  /* Memory Photos */
+  #bush1, #bush2, #bush3 { cursor: pointer; }
+  .photo-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+  .photo-add {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    cursor: pointer;
+    background: rgba(212, 163, 89, 0.12);
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: 1px dashed var(--gold);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .photo-thumb {
+    width: 58px;
+    height: 58px;
+    object-fit: cover;
+    border-radius: 12px;
+    cursor: pointer;
+    border: 2px solid var(--card-border);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+  .photo-thumb:hover { transform: scale(1.05); }
+
+  /* Buttons & Ghost buttons */
+  #letters-actions { text-align: center; margin: 4px 0 14px; }
+  .ghost-btn {
+    padding: 10px 20px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1.5px solid var(--card-border);
+    border-radius: 99px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+  }
+  .ghost-btn:hover { background: rgba(255,255,255,0.4); border-color: var(--rose-pink); }
+  .ghost-btn:active { transform: scale(0.95); }
+  #garden-care {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: Georgia, serif;
+    font-style: italic;
+  }
+
+  /* Overlays (Intro, Finale, Lightbox) */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(45, 20, 28, 0.55);
+    backdrop-filter: blur(8px);
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+  .overlay.hidden { opacity: 0; pointer-events: none; }
+  .card {
+    background: linear-gradient(180deg, var(--card-bg), #fff5ea);
+    border-radius: 26px;
+    padding: 34px 28px;
+    max-width: 410px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+    max-height: 88vh;
+    overflow-y: auto;
+    border: 1px solid var(--card-border);
+  }
+  :root[data-theme="dark"] .card {
+    background: linear-gradient(180deg, var(--card-bg), #22142d);
+  }
+  .card h2 {
+    font-family: Georgia, serif;
+    font-size: 28px;
+    color: var(--text-heading);
+    margin-bottom: 14px;
+  }
+  .card h2 .heart { color: var(--rose-deep); }
+  .card p {
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--text-main);
+    margin-bottom: 18px;
+    white-space: pre-line;
+    font-family: Georgia, serif;
+  }
+  .card .big { font-size: 52px; margin-bottom: 10px; }
+  .card button {
+    margin-top: 10px;
+    padding: 15px 36px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--rose-deep), var(--rose-dark));
+    box-shadow: 0 8px 22px rgba(230,57,95,0.45);
+    transition: transform 0.15s ease;
+  }
+  .card button:active { transform: scale(0.96); }
+
+  #finale .card {
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 60px rgba(243,201,107,0.45), 0 24px 70px rgba(0,0,0,0.35);
+  }
+  #finale-names {
+    font-family: Georgia, serif;
+    font-size: 21px;
+    color: var(--rose-dark);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+
+  /* Photo Lightbox */
+  #photo-viewer img {
+    width: 100%;
+    max-height: 52vh;
+    object-fit: contain;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+  #pv-cap {
+    font-family: Georgia, serif;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    font-size: 15px;
+  }
+  #pv-nav { display: flex; gap: 12px; justify-content: center; }
+  #pv-nav button {
+    padding: 10px 22px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--rose-deep), var(--rose-dark));
+  }
+
+  /* Toast Notification */
+  #toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%) translateY(20px);
+    background: #3e2820;
+    color: #fff;
+    font-size: 14px;
+    padding: 13px 24px;
+    border-radius: 99px;
+    opacity: 0;
+    transition: all 0.35s ease;
+    pointer-events: none;
+    z-index: 120;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Desktop layout (>=960px): sticky left column, right column controls & letters */
+  @media (min-width: 960px) {
+    #app {
+      max-width: 1080px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      column-gap: 54px;
+      align-items: start;
+    }
+    #top-bar, #preview-banner, header {
+      grid-column: 1 / -1;
+    }
+    #col-left {
+      grid-column: 1;
+      position: sticky;
+      top: 24px;
+    }
+    #col-right {
+      grid-column: 2;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="top-bar">
+    <button id="music-btn" class="action-btn" aria-label="Play lullaby" title="Music">🎵</button>
+    <div style="display: flex; gap: 8px;">
+      <button id="fsb" class="action-btn" aria-label="Toggle full screen" title="Full screen">⛶</button>
+      <button id="theme-btn" class="action-btn" aria-label="Switch to moonlight theme" title="Moonlight theme">🌙</button>
+    </div>
+  </div>
+
+  <div id="preview-banner">🌹 PREVIEW MODE — The finished 30-day garden is displayed (set <b>previewAll: false</b> in CONFIG or remove #preview to go live)</div>
+
+  <header>
+    <h1>Our Garden <span class="heart">♥</span></h1>
+    <div id="for-line"></div>
+    <div id="stage-label"></div>
+  </header>
+
+  <!-- Left Column (Scene, Quote, Love Science) -->
+  <div id="col-left">
+    <div id="scene-wrap">
+      <svg id="scene" viewBox="0 0 400 470" aria-label="Our romantic rose garden">
+        <defs>
+          <filter id="grainf" x="0" y="0" width="100%" height="100%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+            <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0"/>
+          </filter>
+          <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="3.2"/>
+          </filter>
+          <filter id="soft6" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="6"/>
+          </filter>
+        </defs>
+
+        <!-- Sky celestial elements -->
+        <g id="sun">
+          <circle cx="326" cy="64" r="36" fill="#ffd93d" opacity="0.28"/>
+          <circle cx="326" cy="64" r="23" fill="#ffd93d"/>
+        </g>
+        <g id="clouds"></g>
+        <g id="birds" stroke="#5a6b7a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.85">
+          <path d="M0,0 q7,-7 14,0 q7,-7 14,0"/>
+          <path d="M40,14 q6,-6 12,0 q6,-6 12,0"/>
+          <path d="M78,-6 q5,-5 10,0 q5,-5 10,0"/>
+        </g>
+
+        <!-- Distant hills & foliage -->
+        <g id="far-hills"></g>
+        <g id="far-trees"></g>
+        <g id="cottage"></g>
+
+        <!-- Rolling meadow ground -->
+        <ellipse cx="200" cy="442" rx="235" ry="62" fill="#8fca80"/>
+        <ellipse cx="200" cy="432" rx="235" ry="55" fill="#a2d894"/>
+        <ellipse cx="118" cy="430" rx="62" ry="20" fill="#93cf85" opacity="0.7"/>
+        <ellipse cx="302" cy="446" rx="72" ry="22" fill="#93cf85" opacity="0.7"/>
+        <g id="dapples"></g>
+        <ellipse id="tree-shadow" cx="196" cy="376" rx="98" ry="13" fill="#3f6b3a" opacity="0.28" filter="url(#soft6)"/>
+
+        <!-- Winding stone path -->
+        <g id="path"></g>
+
+        <!-- Fence, garden sign & mailbox -->
+        <g id="fence"></g>
+        <g id="sign">
+          <rect x="46" y="318" width="9" height="52" rx="4" fill="#8a5a38"/>
+          <rect x="16" y="292" width="82" height="34" rx="7" fill="#c49a6c" stroke="#8a5a38" stroke-width="2.5"/>
+          <text id="sign-text" x="57" y="314" text-anchor="middle" font-family="Georgia, serif"
+                font-style="italic" font-size="13.5" font-weight="bold" fill="#5c3d2e">Saniya ♥</text>
+        </g>
+        <g id="mailbox"></g>
+
+        <!-- Soil mound & sprouting stages -->
+        <ellipse cx="200" cy="370" rx="88" ry="18" fill="#8a6b4f"/>
+        <ellipse id="soil-inner" cx="200" cy="367" rx="64" ry="12" fill="#77593e"/>
+        <g id="seed" class="layer">
+          <ellipse cx="200" cy="358" rx="9" ry="11" fill="#6b4a2f"/>
+          <ellipse cx="197" cy="354" rx="3.5" ry="4.5" fill="#a37c52" opacity="0.8"/>
+          <circle cx="215" cy="350" r="2.4" fill="#fff" opacity="0.9" class="star"/>
+          <circle cx="187" cy="346" r="1.8" fill="#fff" opacity="0.8" class="star"/>
+        </g>
+        <g id="sprout" class="layer" style="display:none">
+          <path d="M200,364 C200,348 198,340 200,326" stroke="#3f7d3a" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <ellipse cx="185" cy="340" rx="15" ry="7.5" fill="#55a04e" transform="rotate(-28 185 340)"/>
+          <ellipse cx="215" cy="334" rx="15" ry="7.5" fill="#66bb6a" transform="rotate(24 215 334)"/>
+          <ellipse cx="200" cy="324" rx="4" ry="6" fill="#ff9ebb"/>
+        </g>
+
+        <!-- Tree with branches & swing -->
+        <g id="tree-sway">
+          <g id="tree-bounce">
+            <g id="tree" class="layer" style="display:none">
+              <g id="trunk-g"></g>
+              <g id="canopy-g"></g>
+              <g id="blossoms"></g>
+              <g id="swing" style="display:none">
+                <line x1="230" y1="262" x2="222" y2="332" stroke="#8a6b4f" stroke-width="3.4" stroke-linecap="round"/>
+                <line x1="246" y1="260" x2="256" y2="332" stroke="#8a6b4f" stroke-width="3.4" stroke-linecap="round"/>
+                <rect x="214" y="330" width="50" height="11" rx="5.5" fill="#a9744f" stroke="#7d5a36" stroke-width="1.6"/>
+                <circle cx="222" cy="332" r="3" fill="#7d5a36"/>
+                <circle cx="256" cy="332" r="3" fill="#7d5a36"/>
+              </g>
+            </g>
+          </g>
+        </g>
+
+        <!-- Rose bushes, mushrooms, watering can -->
+        <g id="bush1" class="layer" style="display:none" title="Rose bush — tap to view memory photos"></g>
+        <g id="bush2" class="layer" style="display:none" title="Rose bush — tap to view memory photos"></g>
+        <g id="bush3" class="layer" style="display:none" title="Rose bush — tap to view memory photos"></g>
+        <g id="mushrooms"></g>
+        <g id="watering-can"></g>
+        <g id="wildflowers"></g>
+        <g id="grass-tufts" stroke-linecap="round" fill="none"></g>
+
+        <!-- Fluttering butterflies -->
+        <g id="bfly1">
+          <ellipse class="wing-l" cx="193" cy="252" rx="9" ry="6" fill="#ffab5e"/>
+          <ellipse class="wing-r" cx="207" cy="252" rx="9" ry="6" fill="#ffab5e"/>
+          <rect x="198.6" y="246" width="2.8" height="13" rx="1.4" fill="#5a4632"/>
+        </g>
+        <g id="bfly2">
+          <ellipse class="wing-l" cx="293" cy="292" rx="8" ry="5.5" fill="#c99df5"/>
+          <ellipse class="wing-r" cx="307" cy="292" rx="8" ry="5.5" fill="#c99df5"/>
+          <rect x="298.6" y="286" width="2.8" height="12" rx="1.4" fill="#5a4632"/>
+        </g>
+
+        <!-- Foreground soft blades -->
+        <g id="foreground" filter="url(#soft)"></g>
+
+        <!-- Nighttime elements -->
+        <rect id="night-veil" x="0" y="0" width="400" height="470" fill="#141a38" opacity="0" pointer-events="none"/>
+        <g id="stars"></g>
+        <g id="moon" style="display:none">
+          <circle cx="322" cy="66" r="30" fill="#fdf6d8" opacity="0.25"/>
+          <circle cx="322" cy="66" r="20" fill="#fdf6d8"/>
+          <circle cx="316" cy="60" r="4.5" fill="#e8dfb8"/>
+          <circle cx="328" cy="72" r="3.2" fill="#e8dfb8"/>
+          <circle cx="324" cy="58" r="2.4" fill="#e8dfb8"/>
+        </g>
+      </svg>
+      <svg id="grain-svg" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" filter="url(#grainf)"/></svg>
+      <div id="vignette"></div>
+      <div id="glow"></div>
+      <div id="fx-layer"></div>
+    </div>
+
+    <!-- Daily Quote -->
+    <div id="quote"></div>
+
+    <!-- Daily Love Science Fact -->
+    <div id="fact-card">
+      <div id="fact-head"></div>
+      <div id="fact-title"></div>
+      <div id="fact-text"></div>
+    </div>
+  </div>
+
+  <!-- Right Column (Controls, Timeline, Letters, Backup) -->
+  <div id="col-right">
+    <div id="timeline">
+      <div id="timeline-cap">30 DAYS OF LOVE</div>
+      <div id="timeline-track"></div>
+    </div>
+
+    <div id="progress-wrap">
+      <div id="day-text"></div>
+      <div id="progress-bar"><div id="progress-fill"></div></div>
+    </div>
+
+    <button id="water-btn">💧 Water the garden</button>
+
+    <div id="note-box">
+      <label for="note-input">💌 Leave a little love note with today's watering <span style="font-weight:400">(optional)</span></label>
+      <textarea id="note-input" placeholder="Something sweet for the garden..."></textarea>
+    </div>
+
+    <!-- Sealed Letters from Suhail -->
+    <div id="his-letters">
+      <h2>💌 Letters from your Suhail</h2>
+      <div id="his-letters-list"></div>
+    </div>
+
+    <!-- Letters to the Garden -->
+    <div id="letters">
+      <h2>💌 Letters to the garden</h2>
+      <div id="letters-actions"><button id="share-letters" class="ghost-btn">💌 Send to Suhail</button></div>
+      <div id="letters-list"><p id="no-letters">No letters yet — the first watering will plant the first one.</p></div>
+    </div>
+
+    <footer id="footer"></footer>
+
+    <div id="garden-care">
+      <button id="backup-btn" class="ghost-btn">💾 Save our garden</button>
+      <button id="restore-btn" class="ghost-btn">📥 Restore</button>
+      <input type="file" id="restore-input" accept="application/json,.json" hidden>
+    </div>
+  </div>
+</div>
+
+<!-- Intro Modal -->
+<div id="intro" class="overlay hidden">
+  <div class="card">
+    <div class="big">🌷</div>
+    <h2 id="intro-title"></h2>
+    <p id="intro-text"></p>
+    <button id="plant-btn">Plant the seed 🌱</button>
+  </div>
+</div>
+
+<!-- Day 30 Finale Modal -->
+<div id="finale" class="overlay hidden">
+  <div class="card">
+    <div class="big">🌹🌹🌹</div>
+    <div id="finale-names"></div>
+    <h2 id="finale-title"></h2>
+    <p id="finale-text"></p>
+    <button id="finale-close">Keep visiting our garden 🌹</button>
+  </div>
+</div>
+
+<!-- Photo Viewer Lightbox -->
+<div id="photo-viewer" class="overlay hidden">
+  <div class="card">
+    <img id="pv-img" alt="A garden memory">
+    <div id="pv-cap"></div>
+    <div id="pv-nav">
+      <button id="pv-prev" aria-label="Previous photo">‹</button>
+      <button id="pv-close">Close</button>
+      <button id="pv-next" aria-label="Next photo">›</button>
+    </div>
+  </div>
+</div>
+
+<!-- Audio element (plays saniya-theme.mp3 if present, or synth fallback) -->
+<audio id="garden-audio" loop preload="auto" src="saniya-theme.mp3"></audio>
+<div id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================
+   🌹 1. CONFIGURATION & PERSONALIZATION
+   ============================================================ */
+const CONFIG = {
+  herName: "Saniya",          // her name / nickname
+  yourName: "Suhail",         // your name
+  gardenDays: 30,             // waterings needed for the full rose garden
+  previewAll: false,          // true = instantly show the finished day-30 garden
+  introTitle: "Our Garden",
+  introText:
+    "Hi princess 👑\n\nThis is a little garden that only grows because of you, my baby. " +
+    "Come back once a day, give it some water, and watch what your love can do.\n\n" +
+    "Thirty days of you — and it becomes a rose garden, fit for my princess.",
+  finaleTitle: "My princess did it 👑",
+  finalMessage:
+    "Thirty days.\nThirty little visits.\nAnd look what grew, baby.\n\n" +
+    "That's what you do, my princess — you make everything bloom just by showing up.\n\n" +
+    "This garden is yours. And so am I — your Suhail ji, forever. ♥",
+  milestones: {
+    7: {
+      title: "One week, princess 👑",
+      text: "Seven days. Seven little visits. You're already my favorite part of every day, baby. Keep going — the best is still growing."
+    },
+    14: {
+      title: "Two weeks of you",
+      text: "Halfway to the rose garden, and I'm falling for you all over again. You make ordinary days feel like festivals, my love."
+    },
+    21: {
+      title: "Three weeks, my baby",
+      text: "Twenty-one days of you choosing us. I notice it, princess. I notice everything you do — and I love you more for all of it."
+    },
+    27: {
+      title: "Almost there",
+      text: "Three more days, baby. The roses are nearly here — just like I always knew they'd be, from the day you walked into my life."
+    }
+  }
+};
+
+/* ---------------- 5. Daily quotes (verbatim) ---------------- */
+const QUOTES = [
+  "You are my favorite hello and my hardest goodbye.",
+  "In all the world, there is no heart for me like yours.",
+  "I love you more than yesterday, but less than tomorrow.",
+  "You make my heart bloom in every season.",
+  "Home is wherever you are.",
+  "Every love story is beautiful, but ours is my favorite.",
+  "You are the poetry I never knew how to write.",
+  "With you, ordinary days feel like magic.",
+  "I choose you. Every single day, I choose you.",
+  "You watered my heart — and look, it grew a garden."
+];
+
+/* ---------------- 6. 30 love facts (verbatim) ---------------- */
+const LOVE_FACTS = [
+  { t: "Love has three ingredients", x: "Psychologist Robert Sternberg said love is built from three parts: intimacy, passion, and commitment. Different mixes make different kinds of love — the rarest kind has all three." },
+  { t: "Familiarity breeds affection", x: "Psychologists call it the mere-exposure effect: the more we see someone, the more we tend to like them. Familiarity doesn't breed contempt — it breeds affection." },
+  { t: "The shaky bridge experiment", x: "In a famous study, people crossing a wobbly suspension bridge felt more attracted to a stranger than people on a safe bridge. A racing heart — whatever the cause — can feel a lot like butterflies." },
+  { t: "How you learned to love", x: "Attachment theory says we each learned a style of loving — secure, anxious, or avoidant — early in life. The beautiful part? Secure love isn't just found, it's built, day by day." },
+  { t: "Everyone speaks love differently", x: "Gary Chapman suggested we each feel loved in different 'languages': kind words, quality time, gifts, touch, or acts of service. Loving someone well means learning to speak theirs." },
+  { t: "The 5:1 rule of happy couples", x: "Researcher John Gottman found that happy couples share about five positive moments for every negative one. It's not about never fighting — it's about the ratio." },
+  { t: "Tiny moments, big love", x: "Gottman also found that small daily 'bids' — 'look at this!', 'how was your day?' — answered with attention, predict whether love lasts. Small moments carry huge weight." },
+  { t: "Keep a map of their heart", x: "Gottman calls them 'love maps': the little details of your partner's inner world — their worries, dreams, favorite songs. Couples who keep updating the map stay close." },
+  { t: "36 questions to fall in love", x: "Psychologist Arthur Aron had strangers ask each other 36 increasingly personal questions. Many pairs felt remarkably close afterward. Vulnerability is a shortcut to the heart." },
+  { t: "Love lives next door", x: "Most couples don't meet by grand fate — they meet through simple proximity: same classes, same streets, same routines. Love often lives next door." },
+  { t: "Birds of a feather", x: "We're drawn to people who share our values, humor, and quirks — the similarity-attraction effect. Somewhere out there, someone laughs at the same silly things you do." },
+  { t: "Four minutes of eye contact", x: "In one study, strangers who held eye contact for four uninterrupted minutes reported real feelings of closeness. Eyes really are a kind of conversation." },
+  { t: "Hold hands, feel better", x: "Holding the hand of someone you love measurably lowers stress and even dulls pain. Touch isn't just sweet — it's medicine." },
+  { t: "Hearts that beat together", x: "When couples sit close, their heartbeats and breathing can literally sync up. Bodies in love keep the same rhythm." },
+  { t: "Love is a happy chemical", x: "Early love floods the brain with dopamine and norepinephrine — the same chemicals behind excitement and focus. No wonder new love feels electric." },
+  { t: "The cuddle hormone", x: "Hugs and gentle touch release oxytocin — the 'bonding hormone' that deepens trust and attachment. Never underestimate a long hug." },
+  { t: "Small rituals beat grand gestures", x: "Study after study finds the same thing: relationships thrive on small daily rituals, not grand gestures. A good-morning text beats a once-a-year surprise." },
+  { t: "Say thank you more", x: "Couples who regularly express gratitude — for big things and tiny ones — report deeper happiness and stay together longer. 'Thank you' is a love language too." },
+  { t: "It's the making up that matters", x: "Every couple fights. What predicts lasting love isn't avoiding conflict — it's the repair: the apology, the humor, the reaching back. Making up is the skill." },
+  { t: "Stay new together", x: "Doing new, slightly exciting things together reawakens the brain chemistry of early love. Stay curious together and the spark keeps renewing itself." },
+  { t: "Sculpt each other kindly", x: "Psychologists call it the Michelangelo phenomenon: great partners gently sculpt each other toward their best selves — the way he saw the angel in the marble." },
+  { t: "Rose-tinted glasses help", x: "Seeing your partner through slightly rose-tinted glasses — a little better than strict reality — actually helps relationships last. A kind illusion, freely chosen." },
+  { t: "Celebrate the small wins", x: "When something good happens, sharing it with a partner who celebrates with you doubles the joy. Researchers call this capitalization — don't let good news go unshared." },
+  { t: "Feeling understood is everything", x: "At the core of intimacy is a simple feeling: being truly seen and understood. Everything else — passion, comfort, trust — grows from that soil." },
+  { t: "Say 'we' more often", x: "Couples who naturally say 'we' and 'us' more than 'me' and 'you' handle stress better. Language quietly reveals — and builds — togetherness." },
+  { t: "Absence feeds the heart", x: "Brief separations really can intensify longing — absence gives the heart room to notice what it holds. (Too much absence, of course, is another story.)" },
+  { t: "Laugh together, stay together", x: "Couples who laugh together — at the same jokes, at themselves, at life — consistently report stronger, happier bonds. Humor is glue." },
+  { t: "Slow love lasts", x: "Research on 'slow love' suggests that taking time — truly knowing someone before rushing — builds stronger, longer-lasting foundations." },
+  { t: "Show the unpolished parts", x: "Real closeness doesn't come from polished perfection. It comes from letting someone see the unpolished parts — and being loved anyway." },
+  { t: "Love is a daily choice", x: "Perhaps the truest finding of all: lasting love is less a feeling you stumble into and more a choice you remake, every single day. Like watering a garden." }
+];
+
+/* ============================================================
+   7. STATE MODEL & PERSISTENCE (localStorage['our-garden-v1'])
+   ============================================================ */
+const STORE_KEY = "our-garden-v1";
+const store = {
+  load() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) {
+      return this._mem || null;
+    }
+  },
+  save(s) {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(s));
+    } catch (e) {
+      this._mem = s;
+    }
+  }
+};
+
+let state = store.load() || {
+  watered: [],
+  notes: [],
+  started: null,
+  finaleSeen: false,
+  announcedMs: [],
+  readMs: [],
+  photos: {}
+};
+
+const PREVIEW = CONFIG.previewAll || (typeof location !== "undefined" && location.hash === "#preview");
+const REDUCED = typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (id) => document.getElementById(id);
+
+const todayStr = () => {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+};
+const yesterdayStr = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+};
+
+const daysWatered = () => PREVIEW ? CONFIG.gardenDays : state.watered.length;
+const wateredToday = () => state.watered.includes(todayStr());
+const missedYesterday = () => !PREVIEW && state.watered.length > 0 && !wateredToday() && !state.watered.includes(yesterdayStr());
+const milestoneKeys = () => Object.keys(CONFIG.milestones || {}).map(Number).sort((a, b) => a - b);
+
+/* ============================================================
+   8. SVG GENERATION & STORYBOOK GRAPHICS
+   ============================================================ */
+const SVGNS = "http" + "://www.w3.org/2000/svg";
+function el(tag, attrs, parent) {
+  const n = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+
+// Seeded pseudorandom generator for deterministic organic curves
+function mulberry32(a) {
+  return function() {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Organic wobble path generator for storybook illustrations
+function blobPath(cx, cy, r, irr, n, seed) {
+  const rnd = mulberry32(seed);
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    const rr = r * (1 - irr / 2 + rnd() * irr);
+    pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * (0.85 + rnd() * 0.3)]);
+  }
+  let d = "";
+  for (let i = 0; i < n; i++) {
+    const p = pts[i], q = pts[(i + 1) % n];
+    const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2;
+    if (i === 0) d = "M" + mx.toFixed(1) + "," + my.toFixed(1);
+    else d += " Q" + p[0].toFixed(1) + "," + p[1].toFixed(1) + " " + mx.toFixed(1) + "," + my.toFixed(1);
+  }
+  const p0 = pts[0], pn = pts[n - 1];
+  const mx = (pn[0] + p0[0]) / 2, my = (pn[1] + p0[1]) / 2;
+  d += " Q" + pn[0].toFixed(1) + "," + pn[1].toFixed(1) + " " + mx.toFixed(1) + "," + my.toFixed(1) + " Z";
+  return d;
+}
+
+function blob(parent, cx, cy, r, fill, seed, irr, ink) {
+  const p = el("path", { d: blobPath(cx, cy, r, irr || 0.35, 9, seed), fill }, parent);
+  if (ink) {
+    p.setAttribute("stroke", ink);
+    p.setAttribute("stroke-width", "2");
+    p.setAttribute("stroke-opacity", "0.3");
+    p.setAttribute("stroke-linejoin", "round");
+  }
+  return p;
+}
+
+function buildClouds() {
+  const g = $("clouds");
+  const defs = [
+    { x: 60, y: 72, s: 1.0, cls: "" },
+    { x: 190, y: 112, s: 0.85, cls: "c2" },
+    { x: 300, y: 150, s: 0.7, cls: "c3" }
+  ];
+  defs.forEach((c, ci) => {
+    const grp = el("g", { class: ("cloud " + c.cls).trim(), opacity: 0.92 }, g);
+    const rnd = mulberry32(100 + ci);
+    for (let i = 0; i < 6; i++) {
+      el("ellipse", {
+        cx: (c.x + (rnd() - 0.5) * 70 * c.s).toFixed(0),
+        cy: (c.y + (rnd() - 0.5) * 16 * c.s).toFixed(0),
+        rx: (16 + rnd() * 16 * c.s).toFixed(0),
+        ry: (10 + rnd() * 8 * c.s).toFixed(0),
+        fill: "#ffffff"
+      }, grp);
+    }
+    el("ellipse", { cx: c.x, cy: c.y + 10 * c.s, rx: 34 * c.s, ry: 8 * c.s, fill: "#dfeef7", opacity: 0.8 }, grp);
+  });
+}
+
+function buildFarWorld() {
+  const hills = $("far-hills");
+  blob(hills, 90, 330, 120, "#b9d3b3", 11, 0.3).setAttribute("opacity", "0.8");
+  blob(hills, 320, 340, 130, "#aec9ac", 12, 0.3).setAttribute("opacity", "0.8");
+  const trees = $("far-trees");
+  const rnd = mulberry32(21);
+  for (let i = 0; i < 7; i++) {
+    const x = 15 + i * 58 + rnd() * 20, y = 296 + rnd() * 14, r = 20 + rnd() * 14;
+    el("rect", { x: x - 3, y, width: 6, height: 22, rx: 3, fill: "#8aa385", opacity: 0.7 }, trees);
+    blob(trees, x, y - 6, r, "#93b28e", 30 + i, 0.4).setAttribute("opacity", "0.75");
+  }
+}
+
+function buildCottage() {
+  const g = $("cottage");
+  const cot = el("g", { opacity: 0.92 }, g);
+  el("rect", { x: 292, y: 268, width: 66, height: 44, rx: 3, fill: "#dcbd93" }, cot);
+  el("path", { d: "M286,270 L325,240 L364,270 Z", fill: "#a05a44", stroke: "#7d4232", "stroke-width": 2, "stroke-linejoin": "round" }, cot);
+  el("rect", { x: 310, y: 288, width: 16, height: 24, rx: 2, fill: "#7d5236" }, cot);
+  el("rect", { x: 296, y: 282, width: 12, height: 12, rx: 2, fill: "#8fa3b8", class: "cottage-window", stroke: "#7d5236", "stroke-width": 1.5 }, cot);
+  el("rect", { x: 342, y: 282, width: 12, height: 12, rx: 2, fill: "#8fa3b8", class: "cottage-window", stroke: "#7d5236", "stroke-width": 1.5 }, cot);
+  el("rect", { x: 342, y: 244, width: 10, height: 22, fill: "#8a6a52" }, cot);
+  for (let i = 0; i < 3; i++) {
+    el("circle", { cx: 347, cy: 240, r: 5, fill: "#e8e2d8", class: "smoke", style: "animation-delay:" + (i * 1.5) + "s" }, cot);
+  }
+}
+
+function buildDapples() {
+  const g = $("dapples");
+  const rnd = mulberry32(77);
+  for (let i = 0; i < 5; i++) {
+    el("ellipse", {
+      cx: 60 + rnd() * 280, cy: 420 + rnd() * 30, rx: 22 + rnd() * 20, ry: 8 + rnd() * 6,
+      fill: "#ffedb0", opacity: 0.28, filter: "url(#soft6)", class: "dapple"
+    }, g);
+  }
+}
+
+function buildPath() {
+  const g = $("path");
+  const rnd = mulberry32(55);
+  const stones = [[200, 462, 27], [198, 445, 23], [203, 429, 19], [200, 414, 16]];
+  stones.forEach(([x, y, r], i) => {
+    const p = blob(g, x + (rnd() - 0.5) * 8, y, r, i % 2 ? "#d9cfc2" : "#cfc4b2", 60 + i, 0.3);
+    p.setAttribute("stroke", "#a89a82");
+    p.setAttribute("stroke-width", "2");
+    p.setAttribute("stroke-opacity", "0.6");
+  });
+}
+
+function buildFence() {
+  const g = $("fence");
+  const rnd = mulberry32(9);
+  el("path", { d: "M6,314 Q100,309 200,314 T394,313", stroke: "#a9744f", "stroke-width": 9, fill: "none", "stroke-linecap": "round" }, g);
+  el("path", { d: "M6,336 Q100,332 200,336 T394,335", stroke: "#9d6a45", "stroke-width": 9, fill: "none", "stroke-linecap": "round" }, g);
+  for (let i = 0; i < 9; i++) {
+    const x = 24 + i * 44, h = 52 + rnd() * 10, tilt = (rnd() - 0.5) * 7;
+    const post = el("g", { transform: "rotate(" + tilt.toFixed(1) + " " + x + " 356)" }, g);
+    el("path", { d: blobPath(x, 306, 8, 0.25, 7, 200 + i), fill: "#b9835a" }, post);
+    el("rect", { x: x - 7, y: 306, width: 14, height: h, rx: 5, fill: "#b9835a" }, post);
+    el("rect", { x: x - 7, y: 306, width: 5, height: h, rx: 2, fill: "#c99a6e", opacity: 0.7 }, post);
+  }
+}
+
+function buildMailbox() {
+  const g = $("mailbox");
+  el("title", {}, g).textContent = "You've got mail from Suhail 💌 — tap to open";
+  el("rect", { x: 348, y: 332, width: 8, height: 42, rx: 4, fill: "#7d5236" }, g);
+  const box = el("g", {}, g);
+  el("rect", { x: 328, y: 308, width: 46, height: 28, rx: 9, fill: "#d9535f", stroke: "#a03a44", "stroke-width": 2 }, box);
+  el("line", { x1: 336, y1: 310, x2: 336, y2: 334, stroke: "#a03a44", "stroke-width": 1.6 }, box);
+  el("rect", { x: 360, y: 300, width: 5, height: 5, rx: 2, fill: "#7d5236" }, box);
+  const flag = el("g", { id: "mail-flag" }, box);
+  el("line", { x1: 366, y1: 312, x2: 366, y2: 292, stroke: "#7d5236", "stroke-width": 3 }, flag);
+  el("rect", { x: 366, y: 286, width: 13, height: 9, rx: 2, fill: "#e6395f" }, flag);
+  flag.style.transition = "transform 1s ease";
+  flag.style.transformBox = "view-box";
+  flag.style.transformOrigin = "366px 312px";
+  flag.style.transform = "rotate(-72deg)";
+}
+
+function buildTrunk() {
+  const g = $("trunk-g");
+  el("path", { d: "M188,366 C190,330 186,300 194,268 C197,252 198,246 200,238",
+               stroke: "#7b5a3a", "stroke-width": 23, fill: "none", "stroke-linecap": "round" }, g);
+  el("path", { d: "M188,366 C182,360 176,358 170,358", stroke: "#7b5a3a", "stroke-width": 10, fill: "none", "stroke-linecap": "round" }, g);
+  el("path", { d: "M212,366 C218,360 224,358 230,358", stroke: "#7b5a3a", "stroke-width": 10, fill: "none", "stroke-linecap": "round" }, g);
+  el("path", { d: "M193,350 C192,330 190,312 193,292", stroke: "#5e422a", "stroke-width": 3, fill: "none", opacity: 0.55, "stroke-linecap": "round" }, g);
+  el("path", { d: "M204,348 C205,328 203,310 206,290", stroke: "#5e422a", "stroke-width": 2.5, fill: "none", opacity: 0.45, "stroke-linecap": "round" }, g);
+  el("path", { d: "M196,308 C182,294 172,288 158,274", stroke: "#7b5a3a", "stroke-width": 11, fill: "none", "stroke-linecap": "round" }, g);
+  el("path", { d: "M200,290 C214,278 226,272 242,260", stroke: "#7b5a3a", "stroke-width": 11, fill: "none", "stroke-linecap": "round" }, g);
+  el("path", { d: "M198,268 C198,258 198,250 199,242", stroke: "#7b5a3a", "stroke-width": 8, fill: "none", "stroke-linecap": "round" }, g);
+
+  // Carved heart with initials "SS" (Suhail & Saniya)
+  el("path", { d: "M191,318 c0,-4 4,-6.5 7,-4 c3,-2.5 7,0 7,4 c0,4.5 -7,8 -7,8 c0,0 -7,-3.5 -7,-8 z", fill: "#5e422a", opacity: 0.85 }, g);
+  const t = el("text", { x: 198, y: 320.5, "text-anchor": "middle", "font-size": 6.8, fill: "#fcecf4", "font-family": "Georgia, serif", "font-weight": "bold" }, g);
+  t.textContent = "SS";
+}
+
+function buildCanopy() {
+  const g = $("canopy-g");
+  const ink = "#2c5028";
+  const layers = [
+    { fill: "#3e7a3c", blobs: [[200,205,62],[140,222,44],[260,222,44],[170,235,40],[230,235,40]], seed: 301 },
+    { fill: "#5a9e4e", blobs: [[200,190,54],[150,208,38],[250,208,38],[200,152,46],[168,178,34],[232,178,34]], seed: 401 },
+    { fill: "#74b85f", blobs: [[182,182,34],[220,180,34],[200,162,30],[160,196,26],[240,196,26]], seed: 501 }
+  ];
+  layers.forEach(L => {
+    L.blobs.forEach(([x, y, r], i) => blob(g, x, y, r, L.fill, L.seed + i, 0.42, ink));
+  });
+  blob(g, 172, 162, 15, "#a5d895", 601, 0.4).setAttribute("opacity", "0.85");
+  blob(g, 226, 156, 13, "#a5d895", 602, 0.4).setAttribute("opacity", "0.8");
+  blob(g, 200, 186, 16, "#a5d895", 603, 0.4).setAttribute("opacity", "0.7");
+}
+
+function buildBlossoms() {
+  const g = $("blossoms");
+  const spots = [
+    [170,158],[200,138],[230,163],[150,193],[250,193],[185,203],[215,198],
+    [160,223],[240,223],[200,180],[176,184],[224,184],[190,150],[210,150]
+  ];
+  spots.forEach(([cx, cy], i) => {
+    const b = el("g", { class: "blossom", id: "blossom-" + i }, g);
+    el("circle", { cx, cy, r: 10, fill: "#ffffff", opacity: 0.35 }, b);
+    for (let p = 0; p < 5; p++) {
+      const a = (p / 5) * Math.PI * 2 - Math.PI / 2;
+      el("circle", { cx: (cx + Math.cos(a) * 6.5).toFixed(1), cy: (cy + Math.sin(a) * 6.5).toFixed(1), r: 5.2, fill: "#f7c6d8" }, b);
+    }
+    el("circle", { cx, cy, r: 3.8, fill: "#fff3b0" }, b);
+    b.style.display = "none";
+  });
+}
+
+function buildBush(id, x, y, s, roseXY, seedBase) {
+  const g = $(id);
+  blob(g, x, y, 46 * s, "#3e7a3c", seedBase, 0.4, "#2c5028");
+  blob(g, x - 24 * s, y + 8 * s, 27 * s, "#4e9b47", seedBase + 1, 0.4);
+  blob(g, x + 24 * s, y + 8 * s, 27 * s, "#4e9b47", seedBase + 2, 0.4);
+  blob(g, x, y - 10 * s, 33 * s, "#5a9e4e", seedBase + 3, 0.4);
+  roseXY.forEach(([dx, dy, c1, c2], i) => {
+    const cx = x + dx * s, cy = y + dy * s, r = (9 + (i % 3)) * s;
+    const rg = el("g", {}, g);
+    for (let p = 0; p < 6; p++) {
+      const a = (p / 6) * Math.PI * 2 + i;
+      el("circle", { cx: (cx + Math.cos(a) * r * 0.55).toFixed(1), cy: (cy + Math.sin(a) * r * 0.55).toFixed(1), r: (r * 0.55).toFixed(1), fill: c1 }, rg);
+    }
+    el("circle", { cx, cy, r: (r * 0.62).toFixed(1), fill: c2 }, rg);
+    el("circle", { cx, cy, r: (r * 0.3).toFixed(1), fill: "#7d1f3a" }, rg);
+  });
+}
+
+function buildMushrooms() {
+  const g = $("mushrooms");
+  const shroom = (x, y, s) => {
+    el("rect", { x: x - 3.5 * s, y: y - 12 * s, width: 7 * s, height: 13 * s, rx: 3 * s, fill: "#e8d9bd" }, g);
+    blob(g, x, y - 13 * s, 10 * s, "#c94f4f", 700 + x, 0.3, "#8e2f2f");
+    [[-4, -14], [3, -16], [0, -10]].forEach(([dx, dy]) => {
+      el("circle", { cx: x + dx * s, cy: y + dy * s, r: 1.8 * s, fill: "#fff" }, g);
+    });
+  };
+  shroom(66, 398, 1);
+  shroom(84, 402, 0.7);
+  shroom(338, 400, 0.85);
+}
+
+function buildWateringCan() {
+  const g = $("watering-can");
+  const can = el("g", { opacity: 0.95 }, g);
+  el("path", { d: "M112,392 L150,392 L144,366 L118,366 Z", fill: "#7fa8b8", stroke: "#5d8291", "stroke-width": 2, "stroke-linejoin": "round" }, can);
+  el("path", { d: "M112,392 L96,372", stroke: "#5d8291", "stroke-width": 5, "stroke-linecap": "round" }, can);
+  el("circle", { cx: 93, cy: 369, r: 4.5, fill: "#5d8291" }, can);
+  el("path", { d: "M150,372 C162,372 162,388 150,388", stroke: "#5d8291", "stroke-width": 4, fill: "none", "stroke-linecap": "round" }, can);
+  el("rect", { x: 126, y: 358, width: 20, height: 8, rx: 3, fill: "#5d8291" }, can);
+}
+
+function buildWildflowers() {
+  const g = $("wildflowers");
+  const spots = [
+    [52,420,"#f7c6d8"],[96,436,"#ffd93d"],[150,424,"#ffffff"],[252,422,"#f7c6d8"],
+    [306,438,"#c99df5"],[348,420,"#ffd93d"],[72,448,"#ffffff"],[330,452,"#f7c6d8"],
+    [180,446,"#c99df5"],[226,440,"#ffffff"]
+  ];
+  spots.forEach(([x, y, c], i) => {
+    const f = el("g", { class: "wildflower", id: "wf-" + i }, g);
+    el("path", { d: "M" + x + "," + y + " q2,-10 0,-16", stroke: "#3f7d3a", "stroke-width": 2.5, fill: "none" }, f);
+    for (let p = 0; p < 5; p++) {
+      const a = (p / 5) * Math.PI * 2;
+      el("circle", { cx: (x + Math.cos(a) * 4).toFixed(1), cy: (y - 17 + Math.sin(a) * 4).toFixed(1), r: 3.2, fill: c }, f);
+    }
+    el("circle", { cx: x, cy: y - 17, r: 2.4, fill: "#ffdf5e" }, f);
+    f.style.display = "none";
+  });
+}
+
+function buildGrass() {
+  const g = $("grass-tufts");
+  const tufts = [[40,442],[110,452],[170,436],[250,450],[320,442],[368,452],[200,458],[280,430],[140,414],[262,414]];
+  tufts.forEach(([x, y], i) => {
+    const t = el("g", { class: "grass", style: "animation-delay:" + (-i * 0.7).toFixed(1) + "s" }, g);
+    el("path", { d: "M" + x + "," + y + " q-4,-14 -8,-18", stroke: "#4e9b47", "stroke-width": 3.5 }, t);
+    el("path", { d: "M" + x + "," + y + " q1,-15 0,-20", stroke: "#5cab54", "stroke-width": 3.5 }, t);
+    el("path", { d: "M" + x + "," + y + " q5,-13 9,-17", stroke: "#3f7d3a", "stroke-width": 3.5 }, t);
+  });
+}
+
+function buildForeground() {
+  const g = $("foreground");
+  const rnd = mulberry32(404);
+  for (let i = 0; i < 14; i++) {
+    const left = i < 7;
+    const x = left ? rnd() * 90 : 310 + rnd() * 90;
+    const h = 60 + rnd() * 70, bend = (rnd() - 0.5) * 50;
+    el("path", {
+      d: "M" + x.toFixed(0) + ",470 Q" + (x + bend).toFixed(0) + "," + (470 - h * 0.6).toFixed(0) +
+         " " + (x + bend * 1.6).toFixed(0) + "," + (470 - h).toFixed(0),
+      stroke: "#2f5c2e", "stroke-width": 9 + rnd() * 7, fill: "none", "stroke-linecap": "round", opacity: 0.9
+    }, g);
+  }
+  el("circle", { cx: 36, cy: 448, r: 20, fill: "#f27d98", opacity: 0.75 }, g);
+  el("circle", { cx: 36, cy: 448, r: 9, fill: "#e6395f", opacity: 0.8 }, g);
+  el("circle", { cx: 368, cy: 452, r: 17, fill: "#c99df5", opacity: 0.75 }, g);
+  el("circle", { cx: 368, cy: 452, r: 7.5, fill: "#9a6fd0", opacity: 0.8 }, g);
+}
+
+function buildStars() {
+  const g = $("stars");
+  const rnd = mulberry32(808);
+  for (let i = 0; i < 44; i++) {
+    const s = el("circle", {
+      cx: (rnd() * 400).toFixed(0), cy: (rnd() * 200).toFixed(0),
+      r: (0.8 + rnd() * 1.6).toFixed(1), fill: "#fff",
+      class: "star", style: "animation-delay:" + (rnd() * 2.8).toFixed(2) + "s"
+    }, g);
+    s.style.display = "none";
+    s.setAttribute("data-star", "1");
+  }
+}
+
+/* ---------------- Time of day ambient tinting ---------------- */
+function setTimeOfDay() {
+  const h = new Date().getHours();
+  const wrap = $("scene-wrap");
+  let sky, veil, sun, moon, clouds, birds, night;
+  if (h >= 5 && h < 8) {
+    // Dawn
+    sky = "linear-gradient(180deg, #ffc9de 0%, #ffe3c8 55%, #fff3dd 100%)";
+    veil = 0; sun = true; moon = false; clouds = true; birds = true; night = false;
+  } else if (h >= 8 && h < 16) {
+    // Day
+    sky = "linear-gradient(180deg, #8fd4ff 0%, #cdeffb 55%, #f2fbff 100%)";
+    veil = 0; sun = true; moon = false; clouds = true; birds = true; night = false;
+  } else if (h >= 16 && h < 19) {
+    // Golden hour / Dusk
+    sky = "linear-gradient(180deg, #ff9d6b 0%, #ffc98f 50%, #ffe9c4 100%)";
+    veil = 0.08; sun = true; moon = false; clouds = true; birds = true; night = false;
+  } else {
+    // Night
+    sky = "linear-gradient(180deg, #10142e 0%, #232a52 55%, #3a3f66 100%)";
+    veil = 0.42; sun = false; moon = true; clouds = false; birds = false; night = true;
+  }
+  wrap.style.background = sky;
+  $("night-veil").setAttribute("opacity", veil);
+  $("sun").style.display = sun ? "" : "none";
+  $("moon").style.display = moon ? "" : "none";
+  $("clouds").style.display = clouds ? "" : "none";
+  $("birds").style.display = birds ? "" : "none";
+  $("bfly1").style.display = night ? "none" : "";
+  $("bfly2").style.display = night ? "none" : "";
+  document.querySelectorAll("[data-star]").forEach(s => { s.style.display = night ? "" : "none"; });
+  document.querySelectorAll(".dapple").forEach(d => { d.style.display = night ? "none" : ""; });
+  document.querySelectorAll(".cottage-window").forEach(w => {
+    w.setAttribute("fill", night ? "#ffd97a" : "#8fa3b8");
+  });
+  return night;
+}
+
+/* ============================================================
+   9. CORE LOOP, STAGES & RENDERING
+   ============================================================ */
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+function stageName(d) {
+  if (d === 0) return "Preparing the garden for you…";
+  if (d <= 3) return "Your love is sprouting 🌱";
+  if (d <= 8) return "Growing stronger every day";
+  if (d <= 17) return "Reaching for the sky 🌳";
+  if (d <= 24) return "Blossoming, just like us 🌸";
+  if (d < CONFIG.gardenDays) return "The roses are waking up 🌹";
+  if (d === CONFIG.gardenDays) return "Our forever rose garden 🌹🌹🌹";
+  return "Ever after 🌹";
+}
+
+function show(elm, visible, popIt) {
+  if (!elm) return;
+  const wasHidden = elm.style.display === "none";
+  elm.style.display = visible ? "" : "none";
+  if (visible && popIt && wasHidden) {
+    elm.classList.remove("pop");
+    void elm.getBoundingClientRect();
+    elm.classList.add("pop");
+  }
+}
+
+function buildTimeline() {
+  const track = $("timeline-track");
+  track.innerHTML = "";
+  for (let i = 1; i <= CONFIG.gardenDays; i++) {
+    const dot = document.createElement("div");
+    dot.className = "tdot";
+    dot.id = "tdot-" + i;
+    dot.title = "Day " + i;
+    track.appendChild(dot);
+  }
+}
+
+function render() {
+  const d = daysWatered();
+  const total = CONFIG.gardenDays;
+
+  // Header & Stage
+  $("stage-label").textContent = stageName(d);
+  $("for-line").textContent = "for " + CONFIG.herName + " ♥";
+  $("day-text").textContent = d > total
+    ? "Day " + d + " of our garden 🌹"
+    : "Day " + Math.min(d, total) + " of " + total;
+  $("progress-fill").style.width = Math.min(100, (d / total) * 100) + "%";
+
+  // Timeline dots
+  for (let i = 1; i <= total; i++) {
+    const dot = $("tdot-" + i);
+    if (!dot) continue;
+    dot.classList.toggle("done", i <= d);
+    dot.classList.toggle("next", i === d + 1 && !PREVIEW);
+  }
+  const nextDot = $("tdot-" + Math.min(d + 1, total));
+  if (nextDot && !PREVIEW) nextDot.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+
+  // Growth layers
+  show($("seed"), d === 0);
+  show($("sprout"), d >= 1 && d <= 3, true);
+  show($("tree"), d >= 4);
+  if (d >= 4) {
+    const s = 0.35 + 0.65 * (Math.min(d, total) / total);
+    $("tree").setAttribute("transform", "translate(200,366) scale(" + s.toFixed(3) + ") translate(-200,-366)");
+  }
+  show($("swing"), d >= 9, true);
+
+  const blossomCount = d < 18 ? 0 : Math.round(14 * ((d - 17) / (total - 17)));
+  document.querySelectorAll(".blossom").forEach((b, i) => {
+    show(b, i < blossomCount, i === blossomCount - 1);
+  });
+
+  show($("bush1"), d >= 24, true);
+  show($("bush2"), d >= 26, true);
+  show($("bush3"), d >= 28, true);
+
+  const wfCount = d < 6 ? 0 : Math.min(10, d - 5);
+  document.querySelectorAll(".wildflower").forEach((f, i) => show(f, i < wfCount, i === wfCount - 1));
+
+  $("soil-inner").setAttribute("fill", wateredToday() && !PREVIEW ? "#5f4630" : "#77593e");
+  $("tree-bounce").classList.toggle("droopy", missedYesterday() && daysWatered() >= 4);
+
+  // Mailbox flag raises when unread letters from him are waiting
+  const mkeys = milestoneKeys();
+  const unread = mkeys.filter(k => d >= k && !(state.readMs || []).includes(k));
+  const flag = $("mail-flag");
+  if (flag) {
+    flag.style.transform = unread.length > 0 ? "rotate(0deg)" : "rotate(-72deg)";
+  }
+
+  // Water button
+  const btn = $("water-btn");
+  if (PREVIEW) {
+    btn.style.display = "none";
+    $("note-box").style.display = "none";
+    $("preview-banner").style.display = "block";
+  } else if (wateredToday()) {
+    btn.disabled = true;
+    btn.textContent = "Watered for today 💧 — see you tomorrow, my princess";
+  } else {
+    btn.disabled = false;
+    btn.textContent = d === 0 ? "💧 Give the seed its first water"
+      : d >= total ? "💧 Tend the garden" : "💧 Water the garden";
+  }
+
+  // Render her letters to the garden (newest first)
+  const list = $("letters-list");
+  list.innerHTML = "";
+  if (!state.notes || !state.notes.length) {
+    list.innerHTML = '<p id="no-letters">No letters yet — the first watering will plant the first one.</p>';
+  } else {
+    [...state.notes].reverse().forEach(n => {
+      const div = document.createElement("div");
+      div.className = "letter";
+      const day = document.createElement("div");
+      day.className = "day";
+      day.textContent = "DAY " + n.day + " · " + n.date;
+      const text = document.createElement("div");
+      text.className = "text";
+      text.textContent = n.text;
+      div.appendChild(day);
+      div.appendChild(text);
+      list.appendChild(div);
+    });
+  }
+
+  // Render his milestone letters
+  const hl = $("his-letters-list");
+  if (hl) {
+    hl.innerHTML = "";
+    milestoneKeys().forEach(k => {
+      const m = CONFIG.milestones[k];
+      const open = d >= k;
+      const div = document.createElement("div");
+      div.className = "letter" + (open ? "" : " locked");
+
+      const t = document.createElement("div");
+      t.className = "day";
+      t.textContent = open ? m.title : "🔒 Opens on day " + k;
+      div.appendChild(t);
+
+      if (open) {
+        const tx = document.createElement("div");
+        tx.className = "text";
+        tx.textContent = m.text;
+        div.appendChild(tx);
+      }
+
+      // Memory photo affordance
+      const prow = document.createElement("div");
+      prow.className = "photo-row";
+      const storedPhotos = (state.photos || {})[k];
+      const photosArr = Array.isArray(storedPhotos) ? storedPhotos : (storedPhotos ? [storedPhotos] : []);
+
+      photosArr.forEach((ph, pIdx) => {
+        const th = document.createElement("img");
+        th.className = "photo-thumb";
+        th.src = ph;
+        th.alt = "Memory photo, day " + k + " #" + (pIdx + 1);
+        th.addEventListener("click", () => openPhotoViewer(k, pIdx));
+        prow.appendChild(th);
+      });
+
+      if (open) {
+        const lab = document.createElement("label");
+        lab.className = "photo-add";
+        lab.textContent = photosArr.length ? "📷 Add another memory photo" : "📷 Add a memory photo";
+        const inp = document.createElement("input");
+        inp.type = "file";
+        inp.accept = "image/*";
+        inp.hidden = true;
+        inp.dataset.day = k;
+        lab.appendChild(inp);
+        prow.appendChild(lab);
+      }
+
+      div.appendChild(prow);
+      hl.appendChild(div);
+    });
+  }
+
+  // Footer & Sign
+  $("footer").textContent = "grown with love by " + CONFIG.yourName + " · for " + CONFIG.herName + " ♥";
+  $("sign-text").textContent = CONFIG.herName + " ♥";
+
+  // Daily Quote & Science Fact
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 864e5);
+  $("quote").textContent = "“" + QUOTES[dayOfYear % QUOTES.length] + "”";
+
+  const fi = (Math.max(1, d) - 1) % LOVE_FACTS.length;
+  const F = LOVE_FACTS[fi];
+  $("fact-head").textContent = "📖 DAY " + Math.max(1, d) + " · A LITTLE LOVE SCIENCE";
+  $("fact-title").textContent = F.t;
+  $("fact-text").textContent = F.x;
+
+  if (d >= total) celebrate();
+}
+
+/* ============================================================
+   10. MUSIC & WEBAUDIO MUSIC-BOX LULLABY
+   ============================================================ */
+let audioCtx = null, musicBus = null, musicTimer = null, musicPlaying = false;
+let musicMode = "mp3"; // "mp3" or fallback "synth"
+
+const NOTE_FREQ = {
+  C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.0, B5: 987.77, C6: 1046.5,
+  G2: 98.0, A2: 110.0, C3: 130.81, F2: 87.31
+};
+
+// 3/4 waltz "written for Saniya", ~24-beat melody + bassline with feedback-delay echo
+const LULLABY = [
+  ["E5",1],["G5",1],["C6",1],
+  ["B5",1],["A5",1],["G5",1],
+  ["A5",1],["C6",1],["B5",1],
+  ["G5",2],["E5",1],
+  ["F5",1],["E5",1],["D5",1],
+  ["E5",1],["D5",1],["C5",1],
+  ["D5",1],["E5",1],["G5",1],
+  ["C6",2.5],[null,0.5]
+];
+const BASSLINE = [
+  ["C3",3],["G2",3],["A2",3],["C3",3],
+  ["F2",3],["G2",3],["C3",3],["C3",3]
+];
+const BEAT = 0.52;
+
+function ensureAudio() {
+  if (audioCtx) return true;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  } catch (e) {
+    return false;
+  }
+  musicBus = audioCtx.createGain();
+  const delay = audioCtx.createDelay(1);
+  delay.delayTime.value = 0.35;
+  const fb = audioCtx.createGain();
+  fb.gain.value = 0.33;
+  const wet = audioCtx.createGain();
+  wet.gain.value = 0.35;
+
+  musicBus.connect(audioCtx.destination);
+  musicBus.connect(delay);
+  delay.connect(fb);
+  fb.connect(delay);
+  delay.connect(wet);
+  wet.connect(audioCtx.destination);
+  return true;
+}
+
+function musicNote(freq, when, dur, vol, bright) {
+  const t = audioCtx.currentTime + when;
+  const o1 = audioCtx.createOscillator();
+  const o2 = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  const g2 = audioCtx.createGain();
+
+  o1.type = "triangle";
+  o1.frequency.value = freq;
+  o2.type = "sine";
+  o2.frequency.value = freq * 2;
+  g2.gain.value = bright ? 0.22 : 0.08;
+
+  o1.connect(g);
+  o2.connect(g2);
+  g2.connect(g);
+  g.connect(musicBus);
+
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol || 0.2, t + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + Math.max(dur, 1.6));
+  o1.start(t);
+  o2.start(t);
+  o1.stop(t + Math.max(dur, 1.7));
+  o2.stop(t + Math.max(dur, 1.7));
+}
+
+function playLullabyOnce() {
+  let when = 0.05;
+  LULLABY.forEach(([n, b]) => {
+    if (n) musicNote(NOTE_FREQ[n], when, b * BEAT, 0.2, true);
+    when += b * BEAT;
+  });
+  const end = when;
+  let bw = 0.05;
+  BASSLINE.forEach(([n, b]) => {
+    musicNote(NOTE_FREQ[n], bw, b * BEAT, 0.09, false);
+    bw += b * BEAT;
+  });
+  return Math.max(end, bw);
+}
+
+function setMusicIcon() {
+  const btn = $("music-btn");
+  const playing = musicMode === "mp3" ? !$("garden-audio").paused : musicPlaying;
+  btn.textContent = playing ? "⏸" : "🎵";
+  btn.setAttribute("aria-label", playing ? "Pause music" : "Play lullaby");
+}
+
+function toggleSynth() {
+  if (!ensureAudio()) { toast("Audio not supported here"); return; }
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  musicPlaying = !musicPlaying;
+  if (musicPlaying) {
+    const loop = () => {
+      if (!musicPlaying) return;
+      const total = playLullabyOnce();
+      musicTimer = setTimeout(loop, total * 1000 + 800);
+    };
+    loop();
+  } else {
+    clearTimeout(musicTimer);
+  }
+  setMusicIcon();
+}
+
+function toggleMusic() {
+  if (musicMode === "mp3") {
+    const a = $("garden-audio");
+    if (a.paused) {
+      const pr = a.play();
+      if (pr && pr.then) {
+        pr.then(setMusicIcon).catch(() => {
+          musicMode = "synth";
+          toggleSynth();
+        });
+      } else {
+        setMusicIcon();
+      }
+    } else {
+      a.pause();
+      setMusicIcon();
+    }
+  } else {
+    toggleSynth();
+  }
+}
+
+/* ============================================================
+   11. WATERING, PARTICLES & ANIMATIONS
+   ============================================================ */
+function dropletRain(done) {
+  const layer = $("fx-layer");
+  for (let i = 0; i < 14; i++) {
+    const drop = document.createElement("div");
+    drop.className = "drop";
+    drop.style.left = (140 + Math.random() * 120) + "px";
+    drop.style.transitionDelay = (Math.random() * 0.35).toFixed(2) + "s";
+    layer.appendChild(drop);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      drop.style.transform = "translateY(310px)";
+      drop.style.opacity = "0";
+    }));
+    setTimeout(() => drop.remove(), 1600);
+  }
+  for (let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      const r = document.createElement("div");
+      r.className = "ripple";
+      r.style.left = (168 + Math.random() * 40) + "px";
+      r.style.top = "338px";
+      layer.appendChild(r);
+      setTimeout(() => r.remove(), 1400);
+    }, 700 + i * 220);
+  }
+  setTimeout(done, 1150);
+}
+
+function letterArrives() {
+  const layer = $("fx-layer");
+  const e = document.createElement("div");
+  e.className = "env-fly";
+  e.textContent = "✉️";
+  layer.appendChild(e);
+  setTimeout(() => e.remove(), 2400);
+}
+
+function doWater() {
+  if (PREVIEW || wateredToday()) return;
+  const btn = $("water-btn");
+  btn.disabled = true;
+
+  dropletRain(() => {
+    const d = state.watered.length + 1;
+    const wasMissed = missedYesterday();
+    state.watered.push(todayStr());
+    if (!state.started) state.started = todayStr();
+
+    const noteText = $("note-input").value.trim();
+    if (noteText) {
+      state.notes.push({ day: d, date: todayStr(), text: noteText });
+      $("note-input").value = "";
+    }
+
+    state.announcedMs = state.announcedMs || [];
+    const newly = milestoneKeys().filter(k => d >= k && !state.announcedMs.includes(k));
+    newly.forEach(k => state.announcedMs.push(k));
+
+    store.save(state);
+    render();
+
+    if (newly.length) {
+      newly.forEach((k, i) => setTimeout(letterArrives, 800 + i * 1100));
+      setTimeout(() => toast("💌 A letter from Suhail arrived — tap the mailbox!"), 900);
+    }
+
+    const b = $("tree-bounce");
+    b.classList.remove("bounce");
+    void b.getBoundingClientRect();
+    b.classList.add("bounce");
+    setTimeout(() => b.classList.remove("bounce"), 950);
+
+    if (!newly.length) {
+      toast(d >= CONFIG.gardenDays
+        ? "The garden is complete 🌹"
+        : wasMissed
+        ? "The garden missed you 💛 — all perked up now!"
+        : "Day " + d + " 🌱 — the garden thanks you, " + CONFIG.herName);
+    }
+  });
+}
+
+/* ---------------- Ambient Particles ---------------- */
+function spawnPetal() {
+  const layer = $("fx-layer");
+  if (layer.querySelectorAll(".petal").length > 60) return;
+  const p = document.createElement("div");
+  p.className = "petal";
+  p.style.left = Math.random() * 100 + "%";
+  p.style.animationDuration = (4 + Math.random() * 4).toFixed(1) + "s";
+  const r = Math.random();
+  if (r < 0.35) p.style.background = "#ff8fb5";
+  else if (r < 0.5) p.style.background = "#ffffff";
+  layer.appendChild(p);
+  setTimeout(() => p.remove(), 9000);
+}
+
+function spawnLeaf() {
+  const layer = $("fx-layer");
+  if (layer.querySelectorAll(".leafp").length > 20) return;
+  const p = document.createElement("div");
+  p.className = "leafp";
+  p.style.left = (110 + Math.random() * 180) + "%";
+  p.style.animationDuration = (5 + Math.random() * 3).toFixed(1) + "s";
+  layer.appendChild(p);
+  setTimeout(() => p.remove(), 9000);
+}
+
+function spawnHeart() {
+  const layer = $("fx-layer");
+  if (layer.querySelectorAll(".heartf").length > 8) return;
+  const h = document.createElement("div");
+  h.className = "heartf";
+  h.textContent = "♥";
+  h.style.left = (120 + Math.random() * 160) + "px";
+  h.style.bottom = "150px";
+  h.style.fontSize = (13 + Math.random() * 12).toFixed(0) + "px";
+  layer.appendChild(h);
+  setTimeout(() => h.remove(), 4800);
+}
+
+function spawnFireflies() {
+  const layer = $("fx-layer");
+  layer.querySelectorAll(".firefly").forEach(f => f.remove());
+  const wanderer = () => {
+    const f = document.createElement("div");
+    f.className = "firefly";
+    f.style.left = (20 + Math.random() * 360) + "px";
+    f.style.top = (180 + Math.random() * 220) + "px";
+    f.style.animationDelay = (-Math.random() * 7).toFixed(1) + "s";
+    f.style.animationDuration = (5 + Math.random() * 4).toFixed(1) + "s";
+    layer.appendChild(f);
+  };
+
+  // Finale night: Fireflies gather into a glowing heart
+  if (daysWatered() >= CONFIG.gardenDays && IS_NIGHT) {
+    for (let i = 0; i < 16; i++) {
+      const a = (i / 16) * Math.PI * 2;
+      const hx = 16 * Math.pow(Math.sin(a), 3);
+      const hy = -(13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a));
+      const f = document.createElement("div");
+      f.className = "firefly heart";
+      f.style.left = ((200 + hx * 2.6) / 400 * 100).toFixed(2) + "%";
+      f.style.top = ((106 + hy * 2.6) / 470 * 100).toFixed(2) + "%";
+      f.style.animationDelay = (-Math.random() * 2.6).toFixed(1) + "s";
+      layer.appendChild(f);
+    }
+    for (let i = 0; i < 6; i++) wanderer();
+    return;
+  }
+  for (let i = 0; i < 12; i++) wanderer();
+}
+
+function shouldRainToday() {
+  const now = new Date();
+  const doy = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 864e5);
+  return doy % 5 === 2;
+}
+
+function rainShower(ms) {
+  const layer = $("fx-layer");
+  for (let i = 0; i < 70; i++) {
+    const r = document.createElement("div");
+    r.className = "rain";
+    r.style.left = (Math.random() * 100).toFixed(1) + "%";
+    r.style.animationDuration = (0.6 + Math.random() * 0.4).toFixed(2) + "s";
+    r.style.animationDelay = (-Math.random()).toFixed(2) + "s";
+    r.style.opacity = (0.25 + Math.random() * 0.35).toFixed(2);
+    layer.appendChild(r);
+    setTimeout(() => r.remove(), ms);
+  }
+  toast("🌧 A soft rain is passing through…");
+}
+
+let ambientStarted = false;
+let IS_NIGHT = false;
+function startAmbient(isNight) {
+  if (ambientStarted) return;
+  ambientStarted = true;
+  if (REDUCED) return;
+
+  if (isNight && daysWatered() >= 8) spawnFireflies();
+  if (shouldRainToday()) setTimeout(() => rainShower(22000), 4000);
+
+  setInterval(() => {
+    const d = daysWatered();
+    if (d >= 18 && d < CONFIG.gardenDays && Math.random() < 0.5) spawnPetal();
+    else if (d >= CONFIG.gardenDays) spawnPetal();
+  }, 900);
+
+  setInterval(() => {
+    const d = daysWatered();
+    if (d >= 9 && Math.random() < 0.3) spawnLeaf();
+  }, 3200);
+
+  setInterval(() => {
+    const d = daysWatered();
+    if (d >= 4 && d < CONFIG.gardenDays && Math.random() < 0.35) spawnHeart();
+    else if (d >= CONFIG.gardenDays && Math.random() < 0.7) spawnHeart();
+  }, 2600);
+}
+
+let celebrated = false;
+function celebrate() {
+  $("scene-wrap").classList.add("glorious");
+  if (celebrated) return;
+  celebrated = true;
+  if (IS_NIGHT) spawnFireflies();
+  for (let i = 0; i < 34; i++) setTimeout(spawnPetal, i * 90);
+
+  const showFinale = () => {
+    $("finale-names").textContent = CONFIG.yourName + " ♥ " + CONFIG.herName;
+    $("finale-title").textContent = CONFIG.finaleTitle;
+    $("finale-text").textContent = CONFIG.finalMessage;
+    $("finale").classList.remove("hidden");
+  };
+
+  if (!PREVIEW && !state.finaleSeen) {
+    state.finaleSeen = true;
+    store.save(state);
+    setTimeout(showFinale, 1600);
+  } else if (PREVIEW) {
+    setTimeout(showFinale, 800);
+  }
+}
+
+/* ============================================================
+   12. MEMORY PHOTOS & LIGHTBOX
+   ============================================================ */
+let activePhotos = [], activeIdx = 0;
+
+function getAllPhotos() {
+  const list = [];
+  const pKeys = Object.keys(state.photos || {}).map(Number).sort((a, b) => a - b);
+  pKeys.forEach(day => {
+    const val = state.photos[day];
+    const arr = Array.isArray(val) ? val : [val];
+    arr.forEach((src, idx) => {
+      list.push({ day, src, title: "Day " + day + " Memory" });
+    });
+  });
+  return list;
+}
+
+function openPhotoViewer(day, photoIndex) {
+  activePhotos = getAllPhotos();
+  if (!activePhotos.length) {
+    toast("No memory photos yet — add one to an open letter 📷");
+    return;
+  }
+  if (day !== undefined) {
+    const matchIdx = activePhotos.findIndex(p => p.day === Number(day));
+    activeIdx = matchIdx >= 0 ? matchIdx + (photoIndex || 0) : 0;
+  } else {
+    activeIdx = 0;
+  }
+  pvShow();
+  $("photo-viewer").classList.remove("hidden");
+}
+
+function pvShow() {
+  const p = activePhotos[activeIdx];
+  if (!p) return;
+  $("pv-img").src = p.src;
+  $("pv-cap").textContent = "Day " + p.day + (activePhotos.length > 1 ? " · Photo " + (activeIdx + 1) + " of " + activePhotos.length : "");
+  const multi = activePhotos.length > 1;
+  $("pv-prev").style.display = multi ? "" : "none";
+  $("pv-next").style.display = multi ? "" : "none";
+}
+
+function handlePhoto(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const day = input.dataset.day;
+  const img = new Image();
+  img.onload = () => {
+    const MAX = 900;
+    const sc = Math.min(1, MAX / Math.max(img.width, img.height));
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(img.width * sc));
+    c.height = Math.max(1, Math.round(img.height * sc));
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(img.src);
+    try {
+      state.photos = state.photos || {};
+      const existing = state.photos[day];
+      const arr = Array.isArray(existing) ? existing : (existing ? [existing] : []);
+      arr.push(c.toDataURL("image/jpeg", 0.82));
+      state.photos[day] = arr;
+      store.save(state);
+      render();
+      toast("Memory saved 📷");
+    } catch (e) {
+      toast("Photo is too big to store 📷");
+    }
+  };
+  img.onerror = () => toast("Couldn't read that photo 📷");
+  img.src = URL.createObjectURL(file);
+  input.value = "";
+}
+
+/* ============================================================
+   13. BACKUP, RESTORE & SHARE
+   ============================================================ */
+function downloadBackup() {
+  const payload = {
+    app: "our-garden",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    herName: CONFIG.herName,
+    state: {
+      watered: state.watered,
+      notes: state.notes,
+      started: state.started,
+      finaleSeen: state.finaleSeen,
+      announcedMs: state.announcedMs || [],
+      readMs: state.readMs || [],
+      photos: state.photos || {}
+    }
+  };
+  const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+  const a = document.createElement("a");
+  const t = new Date(), pad = (n) => String(n).padStart(2, "0");
+  a.href = URL.createObjectURL(blob);
+  a.download = "our-garden-backup-" + t.getFullYear() + "-" + pad(t.getMonth() + 1) + "-" + pad(t.getDate()) + ".json";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 600);
+  toast("Garden saved 💾 — keep it somewhere safe");
+}
+
+function restoreBackup(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      if (!data || data.app !== "our-garden" || !data.state) throw new Error("bad file");
+      const s = data.state;
+      state = {
+        watered: Array.isArray(s.watered) ? s.watered : [],
+        notes: Array.isArray(s.notes) ? s.notes : [],
+        started: s.started || null,
+        finaleSeen: !!s.finaleSeen,
+        announcedMs: Array.isArray(s.announcedMs) ? s.announcedMs : [],
+        readMs: Array.isArray(s.readMs) ? s.readMs : [],
+        photos: (s.photos && typeof s.photos === "object") ? s.photos : {}
+      };
+      store.save(state);
+      render();
+      toast("Garden restored 🌱 — welcome back");
+    } catch (e) {
+      toast("That file isn't a garden backup 💾");
+    }
+  };
+  r.onerror = () => toast("Couldn't read that file 💾");
+  r.readAsText(file);
+}
+
+function shareLetters() {
+  const notes = state.notes || [];
+  if (!notes.length) {
+    toast("No letters to send yet 💌");
+    return;
+  }
+  const photoCount = getAllPhotos().length;
+  let text = "💌 Letters from " + CONFIG.herName + "'s garden\n\n";
+  [...notes].forEach(n => {
+    text += "Day " + n.day + " · " + n.date + "\n" + n.text + "\n\n";
+  });
+  if (photoCount) {
+    text += "📷 " + photoCount + " memory photo" + (photoCount > 1 ? "s" : "") + " tucked into the garden\n\n";
+  }
+  text += "— grown with love by " + CONFIG.yourName;
+
+  if (navigator.share) {
+    navigator.share({ title: "Letters from our garden", text }).catch(() => {});
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(() => toast("Copied — paste it to " + CONFIG.yourName + " 💌"))
+      .catch(() => toast("Couldn't copy — copy manually 💌"));
+  } else {
+    toast("Copy the letters from the garden to share 💌");
+  }
+}
+
+/* ============================================================
+   14. INITIALIZATION & EVENT LISTENERS
+   ============================================================ */
+// Scene builders
+buildClouds();
+buildFarWorld();
+buildCottage();
+buildDapples();
+buildPath();
+buildFence();
+buildMailbox();
+buildTrunk();
+buildCanopy();
+buildBlossoms();
+
+buildBush("bush1", 118, 376, 1.0, [
+  [-16,-18,"#d94f6a","#b0304e"],[12,-22,"#f27d98","#d94f6a"],[24,-6,"#d94f6a","#b0304e"],
+  [-4,-4,"#ff9ebb","#d94f6a"],[-30,-2,"#f27d98","#d94f6a"],[6,-30,"#d94f6a","#b0304e"],[-12,6,"#f27d98","#d94f6a"]
+], 801);
+
+buildBush("bush2", 286, 376, 1.0, [
+  [16,-18,"#f27d98","#d94f6a"],[-12,-22,"#d94f6a","#b0304e"],[-24,-6,"#ff9ebb","#d94f6a"],
+  [4,-4,"#d94f6a","#b0304e"],[30,-2,"#f27d98","#d94f6a"],[-6,-30,"#f27d98","#d94f6a"],[12,6,"#d94f6a","#b0304e"]
+], 811);
+
+buildBush("bush3", 200, 406, 0.62, [
+  [-10,-12,"#d94f6a","#b0304e"],[10,-12,"#f27d98","#d94f6a"],[0,-2,"#ff9ebb","#d94f6a"],
+  [-18,-4,"#f27d98","#d94f6a"],[18,-4,"#d94f6a","#b0304e"]
+], 821);
+
+buildMushrooms();
+buildWateringCan();
+buildWildflowers();
+buildGrass();
+
+// Perched ladybug
+(function ladybug() {
+  const g = el("g", { class: "buggy", transform: "translate(96,352)" }, $("scene"));
+  el("circle", { cx: 0, cy: 0, r: 6, fill: "#d94f4f", stroke: "#8e2f2f", "stroke-width": 1.5 }, g);
+  el("path", { d: "M0,-6 L0,6", stroke: "#8e2f2f", "stroke-width": 1.4 }, g);
+  el("circle", { cx: 0, cy: -6.5, r: 3, fill: "#3a2c22" }, g);
+  el("circle", { cx: -2.6, cy: -2, r: 1.2, fill: "#3a2c22" }, g);
+  el("circle", { cx: 2.6, cy: -2, r: 1.2, fill: "#3a2c22" }, g);
+  el("circle", { cx: -2.2, cy: 3, r: 1.2, fill: "#3a2c22" }, g);
+  el("circle", { cx: 2.2, cy: 3, r: 1.2, fill: "#3a2c22" }, g);
+})();
+
+buildForeground();
+buildStars();
+buildTimeline();
+
+// Theme setup
+(function initTheme() {
+  const btn = $("theme-btn");
+  const apply = (t) => {
+    document.documentElement.dataset.theme = t;
+    btn.textContent = t === "dark" ? "☀️" : "🌙";
+    btn.setAttribute("aria-label", t === "dark" ? "Switch to light theme" : "Switch to moonlight theme");
+    try { localStorage.setItem("our-garden-theme", t); } catch (e) {}
+  };
+  let saved = "light";
+  try { saved = localStorage.getItem("our-garden-theme") || "light"; } catch (e) {}
+  apply(saved);
+  btn.addEventListener("click", () => {
+    apply(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+  });
+})();
+
+// Fullscreen setup
+(function initFullscreen() {
+  const b = $("fsb");
+  if (!document.fullscreenEnabled) {
+    b.style.display = "none";
+    return;
+  }
+  b.addEventListener("click", (e) => {
+    e.stopPropagation();
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    } catch (_) {}
+  });
+  document.addEventListener("fullscreenchange", () => {
+    const fs = !!document.fullscreenElement;
+    b.textContent = fs ? "✕" : "⛶";
+  });
+})();
+
+// Intro setup
+$("intro-title").textContent = CONFIG.introTitle;
+$("intro-text").textContent = CONFIG.introText;
+$("water-btn").addEventListener("click", doWater);
+$("plant-btn").addEventListener("click", () => {
+  $("intro").classList.add("hidden");
+  doWater();
+});
+
+$("finale-close").addEventListener("click", () => $("finale").classList.add("hidden"));
+
+// Mailbox click
+$("mailbox").addEventListener("click", () => {
+  const d = daysWatered();
+  state.readMs = [...new Set([...(state.readMs || []), ...milestoneKeys().filter(k => d >= k)])];
+  store.save(state);
+  render();
+  const hl = $("his-letters");
+  if (hl) hl.scrollIntoView({ behavior: "smooth", block: "start" });
+  toast("Opening letters from Suhail 💌");
+});
+
+// Music & fallback
+$("music-btn").addEventListener("click", toggleMusic);
+$("garden-audio").addEventListener("error", () => {
+  musicMode = "synth";
+}, { once: true });
+
+// Milestone photo inputs
+$("his-letters-list").addEventListener("change", (e) => {
+  if (e.target && e.target.matches('input[type="file"]')) handlePhoto(e.target);
+});
+
+// Rose bushes click -> photo viewer
+["bush1", "bush2", "bush3"].forEach(id => {
+  const b = $(id);
+  if (b) b.addEventListener("click", () => openPhotoViewer());
+});
+
+// Lightbox navigation
+$("pv-close").addEventListener("click", () => $("photo-viewer").classList.add("hidden"));
+$("pv-prev").addEventListener("click", () => {
+  activeIdx = (activeIdx - 1 + activePhotos.length) % activePhotos.length;
+  pvShow();
+});
+$("pv-next").addEventListener("click", () => {
+  activeIdx = (activeIdx + 1) % activePhotos.length;
+  pvShow();
+});
+
+// Keyboard controls for modal/lightbox
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    $("photo-viewer").classList.add("hidden");
+    $("intro").classList.add("hidden");
+    $("finale").classList.add("hidden");
+  } else if (!$("photo-viewer").classList.contains("hidden")) {
+    if (e.key === "ArrowLeft") $("pv-prev").click();
+    else if (e.key === "ArrowRight") $("pv-next").click();
+  }
+});
+
+// Backup & share buttons
+$("backup-btn").addEventListener("click", downloadBackup);
+$("restore-btn").addEventListener("click", () => $("restore-input").click());
+$("restore-input").addEventListener("change", (e) => {
+  restoreBackup(e.target.files[0]);
+  e.target.value = "";
+});
+$("share-letters").addEventListener("click", shareLetters);
+
+// Boot
+IS_NIGHT = setTimeOfDay();
+render();
+startAmbient(IS_NIGHT);
+
+if (!PREVIEW && !state.started) {
+  $("intro").classList.remove("hidden");
+}
+</script>
+</body>
+</html>
