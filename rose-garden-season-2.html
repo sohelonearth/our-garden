@@ -1,0 +1,2424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our Garden — Season 2</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: #101736; color: #f6e9ee;
+    font-family: Georgia, serif; }
+  #app { max-width: 560px; margin: 0 auto; padding: 20px 16px 40px; }
+  header { text-align: center; }
+  header h1 { font-size: 26px; margin: 4px 0 2px; }
+  #for-line { font-size: 13px; font-style: italic; opacity: .8; }
+
+  #scene-wrap { position: relative; margin-top: 14px; border-radius: 24px; overflow: hidden;
+    box-shadow: 0 14px 40px rgba(10, 10, 40, .35); border: 6px solid rgba(255,255,255,.65); }
+  svg#scene { display: block; width: 100%; height: auto; }
+  #vignette { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(20,16,48,.28) 100%); }
+  #grain-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .5; }
+  #fx-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  #theme-btn { position: absolute; top: 12px; right: 12px; z-index: 10;
+    width: 42px; height: 42px; border-radius: 50%; border: 0; cursor: pointer;
+    background: rgba(255,253,247,.88); font-size: 19px;
+    box-shadow: 0 4px 12px rgba(20,16,48,.25); transition: transform .2s; }
+  #theme-btn:active { transform: scale(.92); }
+  #theme-btn:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  #toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(20px);
+    background: rgba(30,18,26,.88); color: #fff; padding: 10px 18px; border-radius: 99px;
+    font-size: 14px; opacity: 0; pointer-events: none; transition: opacity .3s, transform .3s; z-index: 50; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .firefly { position: absolute; width: 7px; height: 7px; border-radius: 50%;
+    background: #ffe97a; box-shadow: 0 0 12px 4px rgba(255,233,122,.55);
+    animation: ffly 7s ease-in-out infinite; }
+  @keyframes ffly {
+    0%,100% { transform: translate(0,0); opacity: .25; }
+    25% { transform: translate(26px,-30px); opacity: 1; }
+    50% { transform: translate(-14px,-58px); opacity: .4; }
+    75% { transform: translate(-30px,-22px); opacity: 1; }
+  }
+  .cloud { animation: drift 34s linear infinite; }
+  .cloud.c2 { animation-duration: 48s; animation-delay: -16s; }
+  .cloud.c3 { animation-duration: 62s; animation-delay: -34s; }
+  @keyframes drift { from { transform: translateX(-120px); } to { transform: translateX(520px); } }
+  #birds { animation: flyby 26s linear infinite; }
+  @keyframes flyby { from { transform: translateX(-90px); } to { transform: translateX(490px); } }
+  .star { animation: twinkle 2.8s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+  .smoke { animation: smokeup 4.5s ease-out infinite; transform-box: fill-box; }
+  @keyframes smokeup {
+    0% { transform: translateY(0) scale(.7); opacity: 0; }
+    25% { opacity: .55; }
+    100% { transform: translateY(-46px) scale(1.5); opacity: 0; }
+  }
+  .wing-l { transform-box: fill-box; transform-origin: 100% 50%; animation: flap .45s ease-in-out infinite alternate; }
+  .wing-r { transform-box: fill-box; transform-origin: 0% 50%; animation: flap .45s ease-in-out infinite alternate; }
+  @keyframes flap { from { transform: scaleX(1); } to { transform: scaleX(.25); } }
+  #bfly1 { animation: wander1 16s ease-in-out infinite; }
+  #bfly2 { animation: wander2 21s ease-in-out infinite; }
+  @keyframes wander1 { 0%,100%{transform:translate(0,0);} 25%{transform:translate(70px,-46px);} 50%{transform:translate(20px,-90px);} 75%{transform:translate(-60px,-40px);} }
+  @keyframes wander2 { 0%,100%{transform:translate(0,0);} 30%{transform:translate(-70px,-60px);} 60%{transform:translate(-20px,-110px);} 80%{transform:translate(50px,-50px);} }
+  #bee1 { animation: beebob 9s ease-in-out infinite; }
+  @keyframes beebob { 0%,100%{transform:translate(0,0);} 30%{transform:translate(46px,-34px);} 55%{transform:translate(90px,6px);} 80%{transform:translate(30px,-52px);} }
+  .mist-puff { animation: mistdrift 11s ease-in-out infinite alternate; }
+  @keyframes mistdrift { from { transform: translateX(-14px); opacity: .45; } to { transform: translateX(16px); opacity: .7; } }
+  .lantern-glow { animation: glowpulse 3.4s ease-in-out infinite; }
+  @keyframes glowpulse { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+  .plot-slot .soil { transition: opacity .6s ease; }
+  .plot-slot { cursor: pointer; }
+  .plot-slot.selected .soil { stroke: #ffd08a; stroke-width: 2; }
+  .plot-slot:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  .plot-slot:focus-visible .soil { stroke: #ffd08a; stroke-width: 2; }
+
+  #care-bar { margin-top: 14px; padding: 14px 16px; border-radius: 18px; text-align: center;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; }
+  #care-info { font-size: 14px; color: #6b5546; margin-bottom: 10px; line-height: 1.5; }
+  #care-btns { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .care-btn { padding: 9px 14px; font-size: 13px; font-weight: 700; color: #5c3d2e; background: #fff;
+    border: 1.5px solid #dcc4a6; border-radius: 99px; cursor: pointer; }
+  .care-btn:active { transform: scale(.95); }
+  .care-btn:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+
+  /* ---------- economy HUD (Task 6) ---------- */
+  #hud { margin-top: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  #hud span { padding: 7px 13px; font-size: 13px; font-weight: 700; color: #5c3d2e;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; border-radius: 99px; }
+  #plot-buy { margin-top: 10px; text-align: center; }
+  #plot-buy .care-btn:disabled { opacity: .55; cursor: default; }
+
+  /* ---------- shop (Task 7) ---------- */
+  #shop { margin-top: 14px; padding: 14px 16px; border-radius: 18px;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; }
+  #shop-head { font-size: 13px; font-weight: 800; color: #5c3d2e; margin-bottom: 2px; }
+  #shop-hint { font-size: 12px; color: #b08a64; margin-bottom: 4px; min-height: 0; }
+  .shop-row { display: flex; align-items: center; gap: 8px; padding: 9px 2px; font-size: 14px; color: #6b5546; }
+  .shop-row + .shop-row { border-top: 1px solid #f0e2cd; }
+  .shop-info { flex: 1; text-align: left; min-width: 0; }
+  .shop-name { font-weight: 700; color: #5c3d2e; }
+  .shop-blurb { font-size: 12px; color: #8a6a52; }
+  .shop-btn { padding: 6px 12px; font-size: 12px; font-weight: 700; color: #5c3d2e; background: #fff;
+    border: 1.5px solid #dcc4a6; border-radius: 99px; cursor: pointer; white-space: nowrap; }
+  .shop-btn:disabled { opacity: .45; cursor: default; }
+  .shop-btn:active:not(:disabled) { transform: scale(.95); }
+  .shop-btn:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  .decor-sprite { cursor: pointer; }
+  .decor-slot { cursor: pointer; }
+  .decor-slot:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  .decor-slot .slot-ring { fill: rgba(255,233,122,.16); stroke: #ffd97a; stroke-width: 1.6; stroke-dasharray: 5 4; }
+
+  /* ---------- surprises & weather (Task 8) ---------- */
+  #weather { margin-top: 14px; padding: 12px 16px; border-radius: 18px; text-align: center;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; }
+  #weather-text { font-size: 14px; color: #6b5546; line-height: 1.5; }
+  #surprise { margin-top: 14px; padding: 14px 16px; border-radius: 18px; text-align: center;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; }
+  #surprise-head { font-size: 13px; font-weight: 800; color: #5c3d2e; margin-bottom: 4px; }
+  #surprise-text { font-size: 14px; color: #6b5546; line-height: 1.6; }
+  .surprise-sprite { position: absolute; font-size: 30px; line-height: 1; cursor: pointer;
+    pointer-events: auto; filter: drop-shadow(0 2px 6px rgba(20,16,48,.35)); }
+  .surprise-sprite:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; border-radius: 8px; }
+  .golden-firefly { position: absolute; width: 13px; height: 13px; border-radius: 50%;
+    background: #ffd93d; box-shadow: 0 0 18px 7px rgba(255,217,61,.65);
+    animation: goldpulse 1.6s ease-in-out infinite; cursor: pointer; pointer-events: auto; }
+  .golden-firefly:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  @keyframes goldpulse { 0%,100% { transform: scale(1); opacity: .7; } 50% { transform: scale(1.35); opacity: 1; } }
+  .rain-drop { position: absolute; top: -12%; width: 2px; height: 34px;
+    background: linear-gradient(180deg, rgba(174,194,224,0), rgba(174,194,224,.85));
+    animation: rainfall 1.1s linear infinite; pointer-events: none; }
+  @keyframes rainfall { from { transform: translateY(0); } to { transform: translateY(900px); } }
+  .meteor-streak { position: absolute; width: 46px; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, rgba(255,255,255,0), #fff 60%, #ffe97a);
+    opacity: 0; animation: meteorshoot 3s ease-in infinite; pointer-events: none; }
+  @keyframes meteorshoot { 0%,55% { opacity: 0; transform: rotate(-32deg) translateX(0); } 70% { opacity: 1; } 100% { opacity: 0; transform: rotate(-32deg) translateX(-90px); } }
+
+  /* ---------- collections: herbarium & bouquet (Task 9) ---------- */
+  #herbarium { margin-top: 14px; padding: 14px 16px; border-radius: 18px;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; }
+  #herbarium-head { font-size: 13px; font-weight: 800; color: #5c3d2e; margin-bottom: 6px; }
+  .herb-row { display: flex; align-items: center; gap: 10px; padding: 8px 2px; font-size: 14px; color: #6b5546; }
+  .herb-row + .herb-row { border-top: 1px solid #f0e2cd; }
+  .herb-name { flex: 1; text-align: left; font-weight: 700; color: #5c3d2e; }
+  .herb-date { font-size: 12px; color: #b08a64; white-space: nowrap; }
+  .herb-locked { opacity: .55; }
+  .herb-locked .herb-name { font-weight: 400; }
+  #bouquet { margin-top: 14px; padding: 14px 16px; border-radius: 18px; text-align: center;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; }
+  #bouquet-head { font-size: 13px; font-weight: 800; color: #5c3d2e; margin-bottom: 8px; }
+  #bouquet-picks { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
+  .bouquet-pick { padding: 8px 13px; font-size: 13px; font-weight: 700; color: #5c3d2e; background: #fff;
+    border: 1.5px solid #dcc4a6; border-radius: 99px; cursor: pointer; }
+  .bouquet-pick.picked { background: #ffe9a8; border-color: #e8b64c; }
+  .bouquet-pick:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  #bouquet-wish { width: 100%; padding: 9px 12px; font-size: 14px; font-family: Georgia, serif; color: #5c3d2e;
+    background: #fff; border: 1.5px solid #dcc4a6; border-radius: 12px; margin-bottom: 10px; }
+  #bouquet-wish:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  #bouquet-preview { font-size: 14px; line-height: 1.65; color: #6b5546; white-space: pre-line; margin-bottom: 10px; }
+  #bouquet-share:disabled { opacity: .45; cursor: default; }
+
+  /* ---------- milestone letters + music (Task 10) ---------- */
+  #music-btn { position: absolute; top: 12px; left: 12px; z-index: 10;
+    width: 42px; height: 42px; border-radius: 50%; border: 0; cursor: pointer;
+    background: rgba(255,253,247,.88); font-size: 19px;
+    box-shadow: 0 4px 12px rgba(20,16,48,.25); transition: transform .2s; }
+  #music-btn:active { transform: scale(.92); }
+  #music-btn:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  #mailbox { cursor: pointer; }
+  #mailbox:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  #mail-flag { transition: transform 1s ease; transform-box: view-box; transform-origin: 390px 308px; }
+  .env-fly { position: absolute; left: 79%; top: -8%; font-size: 32px; z-index: 6;
+    animation: envdrop 2.2s ease-in forwards; }
+  @keyframes envdrop {
+    0% { top: -8%; opacity: 0; transform: rotate(-14deg); }
+    12% { opacity: 1; }
+    100% { top: 57%; opacity: 0; transform: rotate(6deg); }
+  }
+  #letters { margin-top: 14px; }
+  /* The head inherits the body color on purpose: dark by day, light at
+     night — an explicit dark color here would vanish on the night body. */
+  #letters h2 { font-size: 20px; margin-bottom: 12px; text-align: center; }
+  .letter { background: #fffdf8; border: 1px solid #f0e2cd; border-radius: 14px;
+    padding: 14px 16px 14px 20px; margin-bottom: 12px; position: relative; text-align: left; }
+  .letter::before { content: ""; position: absolute; left: 0; top: 12px; bottom: 12px; width: 4px;
+    border-radius: 4px; background: #e8b64c; }
+  .letter .day { font-size: 12px; font-weight: 800; color: #c22850; margin-bottom: 5px; letter-spacing: .4px; }
+  .letter .text { font-size: 14px; line-height: 1.6; white-space: pre-line; color: #5c3d2e; }
+  .letter.locked { opacity: .72; }
+  .letter.locked .day { color: #9a7a5e; }
+  .letter:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+  #shop-toggle { float: right; background: none; border: 0; cursor: pointer;
+    font-size: 14px; color: #5c3d2e; padding: 2px 8px; }
+  #shop-toggle:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+
+  /* ---------- daily loop (Task 5) ---------- */
+  #daily-card { margin-top: 14px; padding: 16px 18px; border-radius: 18px;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; }
+  #daily-head { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #b08a64; margin-bottom: 8px; }
+  #daily-quote { font-style: italic; font-size: 15px; color: #8a6a52; line-height: 1.6; margin-bottom: 10px; }
+  #daily-fact-title { font-family: Georgia, serif; font-size: 17px; font-weight: bold; color: #5c3d2e; margin-bottom: 6px; }
+  #daily-fact-text { font-size: 14px; line-height: 1.65; color: #6b5546; }
+
+  #quests { margin-top: 14px; padding: 14px 16px; border-radius: 18px;
+    background: rgba(255,253,247,.88); border: 1px solid #f0e2cd; }
+  #quests-head { font-size: 13px; font-weight: 800; color: #5c3d2e; margin-bottom: 6px; }
+  .quest-row { display: flex; align-items: center; gap: 10px; padding: 8px 2px; font-size: 14px; color: #6b5546; }
+  .quest-row + .quest-row { border-top: 1px solid #f0e2cd; }
+  .quest-text { flex: 1; text-align: left; }
+  .quest-progress { font-size: 12px; font-weight: 700; color: #b08a64; white-space: nowrap; }
+  .quest-claim { padding: 6px 12px; font-size: 12px; font-weight: 700; color: #5c3d2e; background: #fff;
+    border: 1.5px solid #dcc4a6; border-radius: 99px; cursor: pointer; white-space: nowrap; }
+  .quest-claim:disabled { opacity: .45; cursor: default; }
+  .quest-claim:active:not(:disabled) { transform: scale(.95); }
+  .quest-claim:focus-visible { outline: 3px solid #ffd08a; outline-offset: 2px; }
+
+  #overnight { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center;
+    background: rgba(16, 20, 46, .72); padding: 20px; }
+  #overnight-card { max-width: 380px; width: 100%; padding: 24px; border-radius: 22px; text-align: center;
+    background: #fffdf7; color: #5c3d2e; box-shadow: 0 18px 50px rgba(0,0,0,.4); }
+  #overnight-card h2 { margin: 0 0 6px; font-size: 21px; }
+  #overnight-body { font-size: 14px; line-height: 1.7; color: #6b5546; margin-bottom: 16px; white-space: pre-line; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  }
+  @media (min-width: 960px) { #app { max-width: 680px; } }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>Our Garden — Season 2 🌙</h1>
+    <div id="for-line">A living garden for my princess</div>
+  </header>
+
+  <div id="hud" aria-live="polite">
+    <span id="hud-water"></span>
+    <span id="hud-star"></span>
+    <span id="hud-xp"></span>
+  </div>
+
+  <div id="scene-wrap">
+    <svg id="scene" viewBox="0 0 400 470" xmlns="http://www.w3.org/2000/svg" aria-label="Our living garden">
+      <defs>
+        <filter id="grainf" x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+          <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0"/>
+        </filter>
+        <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="3.2"/>
+        </filter>
+        <filter id="soft6" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="6"/>
+        </filter>
+      </defs>
+
+      <!-- sky actors -->
+      <g id="sun">
+        <circle cx="326" cy="64" r="36" fill="#ffd93d" opacity="0.3"/>
+        <circle cx="326" cy="64" r="23" fill="#ffd93d"/>
+      </g>
+      <g id="clouds">
+        <g class="cloud c1" opacity="0.92">
+          <ellipse cx="80" cy="66" rx="34" ry="13" fill="#fff"/>
+          <ellipse cx="102" cy="58" rx="24" ry="12" fill="#fff"/>
+          <ellipse cx="60" cy="60" rx="20" ry="10" fill="#fff"/>
+        </g>
+        <g class="cloud c2" opacity="0.85">
+          <ellipse cx="250" cy="104" rx="30" ry="11" fill="#fff"/>
+          <ellipse cx="270" cy="97" rx="20" ry="10" fill="#fff"/>
+        </g>
+        <g class="cloud c3" opacity="0.8">
+          <ellipse cx="160" cy="140" rx="26" ry="9" fill="#fff"/>
+          <ellipse cx="178" cy="134" rx="16" ry="8" fill="#fff"/>
+        </g>
+      </g>
+      <g id="birds" stroke="#5a6b7a" stroke-width="2.4" fill="none" stroke-linecap="round" opacity="0.85">
+        <path d="M0,0 q7,-7 14,0 q7,-7 14,0"/>
+        <path d="M40,14 q6,-6 12,0 q6,-6 12,0"/>
+        <path d="M78,-6 q5,-5 10,0 q5,-5 10,0"/>
+      </g>
+      <g id="mist" style="display:none">
+        <ellipse class="mist-puff" cx="120" cy="330" rx="90" ry="14" fill="#fff" opacity="0.55" filter="url(#soft6)"/>
+        <ellipse class="mist-puff" cx="290" cy="350" rx="80" ry="12" fill="#fff" opacity="0.5" filter="url(#soft6)"/>
+      </g>
+
+      <!-- distant world -->
+      <g id="far-hills">
+        <path d="M-10,300 Q90,238 200,292 Q310,244 410,300 L410,470 L-10,470 Z" fill="#b8d9a8"/>
+        <path d="M-10,318 Q110,272 210,310 Q320,276 410,318 L410,470 L-10,470 Z" fill="#a5cf96"/>
+      </g>
+      <g id="cottage">
+        <rect x="292" y="252" width="76" height="58" rx="4" fill="#e8c99a" stroke="#b98d5e" stroke-width="2"/>
+        <path d="M286,254 L330,222 L374,254 Z" fill="#a35d3f" stroke="#7d4527" stroke-width="2" stroke-linejoin="round"/>
+        <rect x="322" y="276" width="16" height="34" rx="3" fill="#7d5a36"/>
+        <rect class="cottage-window" x="300" y="264" width="14" height="14" rx="2" fill="#8fa3b8"/>
+        <rect class="cottage-window" x="346" y="264" width="14" height="14" rx="2" fill="#8fa3b8"/>
+        <rect x="352" y="228" width="10" height="22" fill="#8a6b4f"/>
+        <circle class="smoke" cx="357" cy="222" r="6" fill="#fff" opacity="0.5"/>
+        <circle class="smoke" cx="357" cy="222" r="8" fill="#fff" opacity="0.4" style="animation-delay:-2.2s"/>
+      </g>
+
+      <!-- ground -->
+      <ellipse cx="200" cy="442" rx="235" ry="62" fill="#8fca80"/>
+      <ellipse cx="200" cy="432" rx="235" ry="55" fill="#a2d894"/>
+      <ellipse cx="118" cy="430" rx="62" ry="20" fill="#93cf85" opacity="0.7"/>
+      <ellipse cx="302" cy="446" rx="72" ry="22" fill="#93cf85" opacity="0.7"/>
+
+      <!-- stone path -->
+      <g id="path" fill="#d9c7a8" stroke="#b89b6d" stroke-width="1.4">
+        <ellipse cx="200" cy="452" rx="17" ry="7"/>
+        <ellipse cx="196" cy="432" rx="15" ry="6"/>
+        <ellipse cx="204" cy="412" rx="13" ry="6"/>
+        <ellipse cx="222" cy="392" rx="12" ry="5.5"/>
+        <ellipse cx="248" cy="372" rx="11" ry="5"/>
+        <ellipse cx="276" cy="352" rx="10" ry="5"/>
+        <ellipse cx="300" cy="334" rx="9" ry="4.5"/>
+      </g>
+
+      <!-- fence + sign + mailbox -->
+      <g id="fence" stroke="#8a5a38" stroke-width="3" stroke-linecap="round">
+        <line x1="8" y1="330" x2="392" y2="326"/>
+        <line x1="8" y1="348" x2="392" y2="344"/>
+        <g fill="#a9744f" stroke="#8a5a38" stroke-width="1.6">
+          <rect x="18" y="316" width="9" height="44" rx="4"/>
+          <rect x="62" y="315" width="9" height="44" rx="4"/>
+          <rect x="106" y="314" width="9" height="44" rx="4"/>
+          <rect x="150" y="313" width="9" height="44" rx="4"/>
+          <rect x="238" y="313" width="9" height="44" rx="4"/>
+          <rect x="282" y="314" width="9" height="44" rx="4"/>
+          <rect x="372" y="316" width="9" height="44" rx="4"/>
+        </g>
+      </g>
+      <g id="sign">
+        <rect x="80" y="318" width="9" height="52" rx="4" fill="#8a5a38"/>
+        <rect x="20" y="292" width="130" height="34" rx="7" fill="#c49a6c" stroke="#8a5a38" stroke-width="2.5"/>
+        <text id="sign-text" x="85" y="313" text-anchor="middle" font-family="Georgia, serif"
+              font-style="italic" font-size="11.5" fill="#5c3d2e">Suhail and Saniya ❤️</text>
+      </g>
+      <g id="mailbox" tabindex="0" role="button" aria-label="Mailbox — tap to read your letters from Suhail">
+        <rect x="376" y="330" width="7" height="34" rx="3" fill="#7d5a36"/>
+        <rect x="352" y="306" width="42" height="26" rx="9" fill="#d94f4f" stroke="#a82e2e" stroke-width="2"/>
+        <line x1="352" y1="319" x2="394" y2="319" stroke="#a82e2e" stroke-width="1.6"/>
+        <rect id="mail-flag" x="388" y="292" width="4" height="16" rx="2" fill="#d94f4f" transform="rotate(24 390 308)"/>
+      </g>
+
+      <!-- garden plots (filled by buildScene) -->
+      <g id="plots"></g>
+
+      <!-- wildflowers + winter marigolds -->
+      <g id="wildflowers">
+        <g stroke="#3f7d3a" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M60,428 q2,-12 0,-20"/><path d="M96,436 q-2,-10 0,-18"/>
+          <path d="M340,430 q2,-12 0,-20"/><path d="M368,440 q-2,-10 0,-16"/>
+        </g>
+        <circle cx="60" cy="406" r="4.5" fill="#fff"/><circle cx="60" cy="406" r="1.8" fill="#ffd93d"/>
+        <circle cx="96" cy="416" r="4" fill="#ff9ebb"/><circle cx="96" cy="416" r="1.6" fill="#fff"/>
+        <circle cx="340" cy="408" r="4.5" fill="#c99df5"/><circle cx="340" cy="408" r="1.8" fill="#fff"/>
+        <circle cx="368" cy="422" r="4" fill="#fff"/><circle cx="368" cy="422" r="1.6" fill="#ffd93d"/>
+      </g>
+      <g id="marigolds">
+        <g stroke="#3f7d3a" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M24,384 q2,-12 0,-20"/><path d="M40,386 q-2,-10 0,-18"/><path d="M130,380 q2,-12 0,-20"/>
+        </g>
+        <circle cx="24" cy="362" r="6" fill="#f28c13"/><circle cx="24" cy="362" r="2.6" fill="#ffcf5e"/>
+        <circle cx="40" cy="366" r="5.5" fill="#f28c13"/><circle cx="40" cy="366" r="2.4" fill="#ffcf5e"/>
+        <circle cx="130" cy="358" r="6" fill="#f28c13"/><circle cx="130" cy="358" r="2.6" fill="#ffcf5e"/>
+        <circle cx="18" cy="372" r="4.5" fill="#e07b0a"/><circle cx="136" cy="368" r="4.5" fill="#e07b0a"/>
+      </g>
+
+      <!-- lanterns along the path -->
+      <g id="lanterns">
+        <g>
+          <rect x="176" y="398" width="3.4" height="26" rx="1.7" fill="#5c4632"/>
+          <rect x="169" y="386" width="17" height="14" rx="4" fill="#3a2a1e" stroke="#c9a35c" stroke-width="1.4"/>
+          <circle class="lantern-glow" cx="177.5" cy="393" r="11" fill="#ffd97a" opacity="0.7" style="display:none"/>
+          <circle cx="177.5" cy="393" r="3.4" fill="#ffe9a8"/>
+        </g>
+        <g>
+          <rect x="238" y="382" width="3.4" height="26" rx="1.7" fill="#5c4632"/>
+          <rect x="231" y="370" width="17" height="14" rx="4" fill="#3a2a1e" stroke="#c9a35c" stroke-width="1.4"/>
+          <circle class="lantern-glow" cx="239.5" cy="377" r="11" fill="#ffd97a" opacity="0.7" style="display:none"/>
+          <circle cx="239.5" cy="377" r="3.4" fill="#ffe9a8"/>
+        </g>
+      </g>
+
+      <!-- butterflies + bee (day) -->
+      <g id="bfly1">
+        <ellipse class="wing-l" cx="193" cy="252" rx="9" ry="6" fill="#ffab5e"/>
+        <ellipse class="wing-r" cx="207" cy="252" rx="9" ry="6" fill="#ffab5e"/>
+        <rect x="198.6" y="246" width="2.8" height="13" rx="1.4" fill="#5a4632"/>
+      </g>
+      <g id="bfly2">
+        <ellipse class="wing-l" cx="293" cy="292" rx="8" ry="5.5" fill="#c99df5"/>
+        <ellipse class="wing-r" cx="307" cy="292" rx="8" ry="5.5" fill="#c99df5"/>
+        <rect x="298.6" y="286" width="2.8" height="12" rx="1.4" fill="#5a4632"/>
+      </g>
+      <g id="bee1">
+        <ellipse cx="120" cy="210" rx="7" ry="5" fill="#ffd93d"/>
+        <rect x="118" y="205" width="2.4" height="10" fill="#3a2a1e"/>
+        <rect x="122" y="205" width="2.4" height="10" fill="#3a2a1e"/>
+        <ellipse class="wing-l" cx="114" cy="204" rx="4.5" ry="3" fill="#fff" opacity="0.85"/>
+        <ellipse class="wing-r" cx="126" cy="204" rx="4.5" ry="3" fill="#fff" opacity="0.85"/>
+      </g>
+
+      <!-- foreground depth -->
+      <g id="foreground" filter="url(#soft)">
+        <path d="M30,470 q6,-34 2,-52 q10,20 4,52 Z" fill="#5d9b52"/>
+        <path d="M52,470 q-4,-26 2,-44 q8,18 2,44 Z" fill="#6fae62"/>
+        <path d="M356,470 q-6,-30 0,-48 q10,18 4,48 Z" fill="#5d9b52"/>
+        <path d="M378,470 q4,-24 -2,-40 q-8,16 -2,40 Z" fill="#6fae62"/>
+      </g>
+
+      <!-- decorations (Task 7: owned shop items, rendered by renderDecorations) -->
+      <g id="decorations"></g>
+
+      <!-- night veil -->
+      <rect id="night-veil" x="0" y="0" width="400" height="470" fill="#141a38" opacity="0" pointer-events="none"/>
+      <g id="sky-stars" style="display:none">
+        <circle class="star" cx="42" cy="38" r="1.8" fill="#fff"/>
+        <circle class="star" cx="88" cy="72" r="1.4" fill="#fff"/>
+        <circle class="star" cx="130" cy="30" r="2" fill="#fff"/>
+        <circle class="star" cx="168" cy="84" r="1.4" fill="#fff"/>
+        <circle class="star" cx="210" cy="44" r="1.8" fill="#fff"/>
+        <circle class="star" cx="252" cy="26" r="1.4" fill="#fff"/>
+        <circle class="star" cx="292" cy="96" r="1.6" fill="#fff"/>
+        <circle class="star" cx="356" cy="130" r="1.8" fill="#fff"/>
+        <circle class="star" cx="24" cy="120" r="1.5" fill="#fff"/>
+        <circle class="star" cx="66" cy="150" r="1.3" fill="#fff"/>
+        <circle class="star" cx="150" cy="130" r="1.6" fill="#fff"/>
+        <circle class="star" cx="238" cy="140" r="1.4" fill="#fff"/>
+        <circle class="star" cx="330" cy="170" r="1.5" fill="#fff"/>
+        <circle class="star" cx="376" cy="60" r="1.7" fill="#fff"/>
+        <circle class="star" cx="106" cy="104" r="1.3" fill="#fff"/>
+        <circle class="star" cx="196" cy="110" r="1.5" fill="#fff"/>
+      </g>
+      <g id="moon" style="display:none">
+        <circle cx="322" cy="66" r="30" fill="#fdf6d8" opacity="0.25"/>
+        <circle cx="322" cy="66" r="20" fill="#fdf6d8"/>
+        <circle cx="316" cy="60" r="4.5" fill="#e8dfb8"/>
+        <circle cx="328" cy="72" r="3.2" fill="#e8dfb8"/>
+        <circle cx="324" cy="58" r="2.4" fill="#e8dfb8"/>
+      </g>
+    </svg>
+    <svg id="grain-svg" aria-hidden="true"><rect x="0" y="0" width="100%" height="100%" filter="url(#grainf)"/></svg>
+    <div id="vignette"></div>
+    <button id="music-btn" aria-label="Play music">🎵</button>
+    <button id="theme-btn" aria-label="Show moonlight">🌙</button>
+    <div id="fx-layer"></div>
+  </div>
+  <div id="care-bar">
+    <div id="care-info">Tap a bed to tend it 🌱</div>
+    <div id="care-btns"></div>
+  </div>
+  <div id="plot-buy"></div>
+  <div id="shop">
+    <div id="shop-head">Garden shop ✨ <button id="shop-toggle" aria-expanded="true" aria-controls="shop-list" aria-label="Collapse shop">▾</button></div>
+    <div id="shop-hint"></div>
+    <div id="shop-list"></div>
+  </div>
+  <div id="daily-card">
+    <div id="daily-head"></div>
+    <div id="daily-quote"></div>
+    <div id="daily-fact-title"></div>
+    <div id="daily-fact-text"></div>
+  </div>
+  <div id="quests">
+    <div id="quests-head">Today's quests ✨</div>
+    <div id="quest-list"></div>
+  </div>
+  <div id="weather"><div id="weather-text"></div></div>
+  <div id="surprise">
+    <div id="surprise-head">Today's surprise ✨</div>
+    <div id="surprise-text"></div>
+  </div>
+  <div id="herbarium">
+    <div id="herbarium-head">Herbarium 🌸</div>
+    <div id="herbarium-list"></div>
+  </div>
+  <div id="bouquet">
+    <div id="bouquet-head">Make a bouquet 💐</div>
+    <div id="bouquet-picks"></div>
+    <input id="bouquet-wish" type="text" maxlength="120" placeholder="Write a wish for this bouquet…" aria-label="A wish for your bouquet">
+    <div id="bouquet-preview"></div>
+    <button id="bouquet-share" class="care-btn">Share my bouquet 💐</button>
+  </div>
+  <div id="letters">
+    <h2 id="letters-head">Letters from Suhail 💌</h2>
+    <div id="letters-list"></div>
+  </div>
+  <div id="overnight" role="dialog" aria-modal="true" aria-labelledby="overnight-title">
+    <div id="overnight-card">
+      <h2 id="overnight-title">Look what bloomed! 🌸</h2>
+      <div id="overnight-body"></div>
+      <button id="overnight-close" class="care-btn">Lovely ♥</button>
+    </div>
+  </div>
+  <div id="toast"></div>
+</div>
+<audio id="garden-audio" loop preload="auto" src="saniya-theme.mp3"></audio>
+<script>
+// Season 2 CONFIG content (Task 1, 2026-11-11)
+const S2_THEME = "mixed-day-night-winter"; // morning: bees, butterflies, sun; night: moonlight, fireflies, stars; opening season: winter (mist, marigolds, warm lanterns); follows real seasons after
+
+const S2_QUOTES = [
+  "You are my favorite place to be, even when we are miles apart.",
+  "Somewhere between all my thoughts, there is always you.",
+  "I did not believe in fate until you walked into my life.",
+  "You are the calm in every storm I have ever known.",
+  "Loving you is the easiest thing I have ever done.",
+  "Every version of me is better because of you.",
+  "You are my today, my tomorrow, and every day after.",
+  "The best part of my day is every moment with you in it.",
+  "I would find you in every lifetime, princess.",
+  "You turned my ordinary life into my favorite story.",
+];
+
+const S2_LOVE_FACTS = [
+{t:"Love grows stronger with obstacles",x:"Psychologists call it the Romeo and Juliet effect: when love faces obstacles, feelings can intensify rather than fade. A love that is fought for is a love that is felt more deeply."},
+{t:"Why we stay",x:"Psychologist Caryl Rusbult's investment model says commitment grows from three things: how happy we are, how much we have invested, and how few tempting alternatives there are. Every shared day is another brick in the house."},
+{t:"Love makes you more you",x:"Arthur Aron's self-expansion theory says we fall for people who expand who we are — new ideas, new joys, new sides of ourselves. The right person doesn't complete you; they grow you."},
+{t:"The four horsemen",x:"John Gottman found four habits that predict trouble: criticism, contempt, defensiveness, and stonewalling. The good news is each has an antidote — and the strongest is simply turning toward each other with kindness."},
+{t:"The six-second kiss",x:"Gottman suggests a six-second kiss every day — long enough to actually feel it, short enough to never skip. Small rituals like this are how connection survives busy days."},
+{t:"The twenty-second hug",x:"A hug held for a full twenty seconds does something a quick pat never can: it slows breathing, lowers stress, and tells the body it is safe. Never rush a hug from someone you love."},
+{t:"The halo effect",x:"When we love someone, we tend to see them as good at everything — kinder, funnier, smarter. It is a bias, yes, but it is also generosity: love looks for the light in a person."},
+{t:"Favors make you fonder",x:"The Ben Franklin effect says doing small favors for someone makes you like them more, not less. Every little thing you do for your person quietly deepens your own feelings for them."},
+{t:"We remember the best and the last",x:"The peak-end rule says we judge an experience by its best moment and by how it ends. That is why a kind goodnight matters so much — it is the ending your heart keeps."},
+{t:"Calming each other down",x:"Partners co-regulate: your calm steadies their nerves, and their calm steadies yours. Just being near the person you love can slow a racing heart — no words needed."},
+{t:"Wonder, shared",x:"Experiencing awe together — a starry sky, a beautiful song, a mountain view — bonds people more deeply than ordinary moments. Wonder shared is wonder doubled."},
+{t:"Perfectly imperfect",x:"The pratfall effect says small mistakes make someone more likable, not less. The little stumbles are what make a person feel real — and real is what we fall for."},
+{t:"Liking grows where it is returned",x:"Reciprocal liking is simple: knowing someone likes you makes you like them back. Love is rarely a mystery of chemistry alone — often it starts with being brave enough to show it first."},
+{t:"Moving in sync",x:"The chameleon effect: people who like each other unconsciously mirror each other's gestures, smiles, and rhythms. When two people start moving as one, their hearts are usually already there."},
+{t:"Love is not a ledger",x:"Social exchange theory says we weigh rewards against costs — but the happiest couples stop counting. The moment love becomes a scoreboard, it starts to lose."},
+{t:"Fairness feels like love",x:"Equity theory finds that couples are happiest when both feel the give-and-take is fair. Not perfectly equal every day — just both knowing the other is trying."},
+{t:"Passion grows up",x:"Love researchers distinguish passionate love from companionate love — the deep, steady warmth that follows. Passion softening into companionship is not love fading; it is love settling in for a lifetime."},
+{t:"The two-year shift",x:"Research finds passionate intensity often eases around eighteen to thirty months — and that is normal. What grows in its place, attachment and trust, is what carries couples for decades."},
+{t:"A base and a haven",x:"Attachment researchers say a partner is two things at once: a secure base you explore the world from, and a safe haven you return to. Home is not a place — it is a person."},
+{t:"Unfinished business sticks",x:"The Zeigarnik effect says our minds hold onto unfinished things. That is why an unresolved argument replays at 2 a.m. — close the loop kindly, and both of you sleep better."},
+{t:"Believe the best, see the best",x:"Confirmation bias means we notice what fits what we already believe about our partner. Believe the best of them, and you will keep finding proof you were right."},
+{t:"Rare feels precious",x:"The scarcity principle says we value what feels rare. Time together feels precious precisely because it is limited — never waste a moment you get."},
+{t:"Just being there helps",x:"Studies find that simply having your partner nearby — even in silence, even doing nothing — lowers stress. Presence itself is a kind of care."},
+{t:"Twenty minutes a day",x:"Gottman suggests twenty minutes a day of really listening to each other's day — no fixing, just listening. It is one of the smallest habits with the biggest payoff."},
+{t:"The glow after a good day",x:"Researchers found that the warmth of a lovely shared day lingers into the next one — an afterglow. A good day together is a gift that keeps giving."},
+{t:"Touch builds trust",x:"Gentle touch does more than comfort — in experiments it measurably increases trust and cooperation. A hand on a shoulder can say what words cannot."},
+{t:"A language only you two speak",x:"Couples invent private words, nicknames, and jokes no one else understands — researchers call it idiosyncratic communication, and it predicts closeness. A language only the two of you speak is a world only the two of you share."},
+{t:"The sound of their voice",x:"Hearing a loved one's voice calms stress more than reading their words ever could. A call is worth a hundred texts — your voice is medicine to the person who loves you."},
+{t:"Remembering together",x:"Reliving shared memories together — retelling the story of how you met, laughing about old days — measurably strengthens the bond. Nostalgia, shared, is glue."},
+{t:"Love can grow",x:"Research on relationship beliefs finds couples do best when they believe love grows with effort, not that it is fixed by fate. 'Soulmate or not' is the wrong question — the right one is 'are we growing?'"},
+];
+
+/* ---------- CONFIG ---------- */
+const CONFIG = {
+  herName: "Saniya",          // her name / nickname
+  yourName: "Suhail",         // your name
+  gardenDays: 30,             // days in one season of the living garden
+  previewAll: false,          // true = instantly show a mature garden (for you to check)
+  theme: S2_THEME,            // mixed day/night, opening season winter
+  waterMax: 10,               // water refills to this each morning
+  quotes: S2_QUOTES,          // daily quotes (Task 1)
+  loveFacts: S2_LOVE_FACTS,   // daily love science (Task 1)
+  milestones: {               // Task 10: letters from Suhail, days 7/14/21/27
+    7: { title: "One week, princess 👑",
+         text: "Seven days, my baby. Seven mornings you came back to this little garden, and every single one of them was my favorite part of the day. Look at what we grew in just one week — now imagine what a lifetime of us will look like. Keep watering, princess. I am growing right alongside you, and I love you more with every sunrise. — Suhail ji ♥" },
+    14: { title: "Two weeks of you",
+         text: "Fourteen days, princess. Halfway through our first season, and I have learned something: you make even ordinary days feel like festivals. The way you show up, every day, for something small and living — that is exactly how you love, and it is exactly why I love you. Two more weeks, my baby. The best is still blooming. — Suhail ji ♥" },
+    21: { title: "Three weeks, my baby",
+         text: "Twenty-one days. Three whole weeks of you choosing this garden — choosing us — every single day. I notice it, princess. I notice everything you do, even the small things you think nobody sees. That is the secret of this garden: it grows the way love grows, one quiet day at a time. And my love for you? It has never stopped growing. — Suhail ji ♥" },
+    27: { title: "Almost there, princess",
+         text: "Three more days, my baby. Three more mornings, and the roses will be here — just like I always knew they would be, from the day you walked into my life. Whatever blooms in this garden, remember this: you are the reason anything grows at all. You are my favorite person, my favorite place, my favorite everything. Forever yours — Suhail ji ♥" },
+  },
+};
+
+/* ---------- state ---------- */
+const STORE_KEY = "our-garden-s2-v1"; // never reuse the Season 1 key
+function freshPlot() {
+  return { species: null, plantedAt: null, lastCareAt: null,
+           care: { water: 0, moonlight: 0, prune: 0 }, droop: false,
+           bloomRewarded: false }; // overnight Starlight claimed for this bloom yet?
+}
+function freshState() {
+  return {
+    plots: [freshPlot(), freshPlot(), freshPlot()],
+    water: CONFIG.waterMax,
+    starlight: 0,
+    xp: 0,
+    level: 1,
+    quests: { date: null, done: {} },
+    unlocked: { plots: 3, species: ["moonflower"], decorations: [] },
+    herbarium: {},
+    bouquet: { blooms: [], wish: "" }, // Task 9: picked species (max 3) + her saved wish
+    decorations: { owned: [], placed: {} }, // Task 7: owned ids + { slotIndex: id }
+    lettersRead: [],
+    lettersAnnounced: [], // Task 10: milestone days whose arrival was already announced (envelope flown once)
+    surprises: {}, // Task 8: per local date, claim flags { rainApplied, seedClaimed, seedSpecies, catClaimed, letterRead, starClaimed, moonClaimed }
+    hiddenLetters: [], // Task 8: found hidden firefly letters { date, text } — Task 9 reads these
+    dayCount: 0,
+    started: null,
+    lastDay: null, // last local date the garden was opened (drives daily resets)
+    lastSeenAt: null, // ms timestamp of the last open (drives overnight blooms)
+    questProgress: {}, // today's quest counters, reset by advanceDay
+    moonlight: false, // moonlight theme toggle (Task 3)
+  };
+}
+const store = {
+  _mem: null, // in-memory copy, used only while a save has failed (quota)
+  load() { try { if (this._mem) return this._mem;
+                  const raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : null; }
+           catch (e) { return this._mem || null; } },
+  save(s)  { try { localStorage.setItem(STORE_KEY, JSON.stringify(s)); this._mem = null; }
+             catch (e) { this._mem = s; } },
+};
+function loadState() { return store.load(); }
+// Preview mode (Task 11): CONFIG.previewAll = true OR the #preview hash
+// shows a mature garden for checking — all letters visible, every species
+// and decoration unlocked, a grown garden — and NOTHING is saved while it
+// is on, so her real garden is never touched. #demo=garden is the same
+// mode under its older name (the debug hook from Task 3).
+function isPreviewMode() {
+  if (CONFIG.previewAll) return true;
+  try {
+    const h = (typeof location !== "undefined" && location.hash) || "";
+    return /preview/.test(h) || /demo=garden/.test(h);
+  } catch (e) { return false; }
+}
+function saveState(s) { if (isPreviewMode()) return; store.save(s); }
+let state = loadState() || freshState();
+
+/* ---------------- plant engine (Task 4) ---------------- */
+// All growth is timestamp-based: stage = f(now - plantedAt). Nothing here
+// counts calendar days, so a clock change can never rewind or skip growth,
+// and a plant mid-timer keeps growing through missed days. Neglect only
+// droops a plant (never kills it); any care revives it.
+const HOUR = 3600e3;
+const DROOP_AFTER = 72 * HOUR; // 3 days without any care -> droop (never death)
+
+const PLANTS = {
+  moonflower:    { name: "Moonflower",     sproutAt: 1 * HOUR,  budAt: 2.5 * HOUR, bloomAt: 5 * HOUR,
+                   care: { water: 2, moonlight: 2, prune: 1 }, bud: "#cfc0ea", bloom: "#fdf6ff" },
+  tulip:         { name: "Tulip",          sproutAt: 2 * HOUR,  budAt: 4 * HOUR,   bloomAt: 6 * HOUR,
+                   care: { water: 2, moonlight: 1, prune: 1 }, bud: "#d94f6a", bloom: "#e85d75" },
+  lavender:      { name: "Lavender",       sproutAt: 3 * HOUR,  budAt: 8 * HOUR,   bloomAt: 14 * HOUR,
+                   care: { water: 2, moonlight: 1, prune: 2 }, bud: "#8a5fc0", bloom: "#a578e0" },
+  sunflower:     { name: "Sunflower",      sproutAt: 4 * HOUR,  budAt: 12 * HOUR,  bloomAt: 24 * HOUR,
+                   care: { water: 3, moonlight: 1, prune: 1 }, bud: "#c9a227", bloom: "#ffd93d" },
+  nightjasmine:  { name: "Night Jasmine",  sproutAt: 6 * HOUR,  budAt: 18 * HOUR,  bloomAt: 36 * HOUR,
+                   care: { water: 2, moonlight: 3, prune: 1 }, bud: "#d8d8e8", bloom: "#ffffff" },
+  cherryblossom: { name: "Cherry Blossom", sproutAt: 12 * HOUR, budAt: 36 * HOUR,  bloomAt: 72 * HOUR,
+                   care: { water: 3, moonlight: 2, prune: 2 }, bud: "#e89bb8", bloom: "#f7b8d0" },
+};
+const CARE_ACTIONS = ["water", "moonlight", "prune"];
+// Task 6 economy: water is the finite morning resource (1 per watering);
+// moonlight and prune are attention, not resources — free, so she can
+// always tend her garden even out of water. Daily math: a full 6-plot
+// garden needs ~14 water over the plants' whole growth windows, ~6-9 on a
+// typical day, inside the 10/day refill. Care never gates growth (growth
+// is timestamp-based), so scarcity is a gentle choice, never a block.
+const WATER_COST = { water: 1, moonlight: 0, prune: 0 };
+const CARE_LABEL = { water: "💧 Water", moonlight: "🌙 Moonlight", prune: "✂️ Prune" };
+const CARE_VERB = {
+  water: "💧 Watered your ",
+  moonlight: "🌙 Bathed your ",
+  prune: "✂️ Pruned your ",
+};
+
+function plotIndex(p) { return typeof p === "number" ? p : state.plots.indexOf(p); }
+
+// Stage of a plot at a timestamp: -1 empty, 0 seed, 1 sprout, 2 bud, 3 bloom.
+// A timestamp before planting (clock moved backwards) stays a seed, never negative.
+function growthStage(plot, now) {
+  if (!plot || !plot.species || !PLANTS[plot.species] || plot.plantedAt == null) return -1;
+  const t = (now === undefined ? Date.now() : now) - plot.plantedAt;
+  if (t < 0) return 0;
+  const p = PLANTS[plot.species];
+  if (t < p.sproutAt) return 0;
+  if (t < p.budAt) return 1;
+  if (t < p.bloomAt) return 2;
+  return 3;
+}
+
+// Droop = no care for 3 days. Returns true only when the flag changed.
+function updateDroop(plot, now) {
+  if (!plot) return false;
+  if (!plot.species) { if (plot.droop) { plot.droop = false; return true; } return false; }
+  const t = now === undefined ? Date.now() : now;
+  const last = plot.lastCareAt != null ? plot.lastCareAt : plot.plantedAt;
+  const should = last != null && (t - last > DROOP_AFTER);
+  const changed = plot.droop !== should;
+  plot.droop = should;
+  return changed;
+}
+
+function isWellTended(plot) {
+  if (!plot || !plot.species || !PLANTS[plot.species]) return false;
+  const need = PLANTS[plot.species].care;
+  return CARE_ACTIONS.every((a) => plot.care[a] >= need[a]);
+}
+
+function plantSeed(p, species, now) {
+  const i = plotIndex(p);
+  const t = now === undefined ? Date.now() : now;
+  const plot = state.plots[i];
+  if (!plot) { toast("That bed does not exist yet 🌱"); return false; }
+  if (plot.species) { toast("Something is already growing here 🌱"); return false; }
+  if (!PLANTS[species]) { toast("Unknown seed 🌱"); return false; }
+  if (!state.unlocked.species.includes(species)) { toast("That plant is still locked 🔒"); return false; }
+  plot.species = species;
+  plot.plantedAt = t;
+  plot.lastCareAt = t; // a fresh seedling counts as just tended
+  plot.care = { water: 0, moonlight: 0, prune: 0 };
+  plot.droop = false;
+  addXP(3); // Task 6: planting a seed is +3 XP
+  saveState(state);
+  renderPlants(t);
+  renderCareBar();
+  toast("Planted a " + PLANTS[species].name + " 🌱");
+  return true;
+}
+
+function carePlant(p, action, now) {
+  const i = plotIndex(p);
+  const t = now === undefined ? Date.now() : now;
+  const plot = state.plots[i];
+  if (!plot || !plot.species) { toast("Nothing growing in that bed yet 🌱"); return false; }
+  if (!CARE_ACTIONS.includes(action)) return false;
+  if (state.water < WATER_COST[action]) { toast("Out of water — it refills in the morning 💧"); return false; }
+  const wasDrooping = plot.droop;
+  state.water -= WATER_COST[action];
+  plot.care[action] += 1;
+  // Task 5: every care action counts toward today's tend-3 quest.
+  state.questProgress = state.questProgress || {};
+  state.questProgress.tend = (state.questProgress.tend || 0) + 1;
+  plot.lastCareAt = t;
+  plot.droop = false;
+  addXP(2); // Task 6: a care action is +2 XP
+  saveState(state);
+  renderPlants(t);
+  renderCareBar();
+  renderHUD();
+  toast(CARE_VERB[action] + PLANTS[plot.species].name + (wasDrooping ? " — perked right back up 🌱" : ""));
+  return true;
+}
+
+// ---- plant rendering ----
+// Bed geometry is read back from the bed ellipse Task 3 already drew
+// (cx, rx = 46*s), so this never re-derives or breaks the layout math.
+let selectedPlot = 0;
+
+function drawBloom(g, species, cx, yTop, s) {
+  if (species === "moonflower") {
+    svgEl("circle", { cx, cy: yTop, r: 13 * s, fill: "#fdf6ff", opacity: 0.35 }, g);
+    [[-8, -4], [8, -6], [0, 8]].forEach(([dx, dy]) => {
+      svgEl("circle", { cx: cx + dx * s, cy: yTop + dy * s, r: 6 * s, fill: "#fdf6ff", stroke: "#c9a8e8", "stroke-width": 1 }, g);
+      svgEl("circle", { cx: cx + dx * s, cy: yTop + dy * s, r: 2 * s, fill: "#e8c96a" }, g);
+    });
+  } else if (species === "lavender") {
+    [[-9, 0], [0, -4], [9, 0]].forEach(([dx, dy]) => {
+      svgEl("path", { d: "M" + (cx + dx * s) + "," + (yTop + 12 * s) + " L" + (cx + dx * s) + "," + (yTop + dy * s),
+        stroke: "#3f7d3a", "stroke-width": Math.max(1.5, 2 * s), fill: "none", "stroke-linecap": "round" }, g);
+      for (let k = 0; k < 4; k++) {
+        svgEl("circle", { cx: cx + dx * s, cy: yTop + dy * s + k * 4 * s, r: 2.6 * s, fill: k % 2 ? "#8a5fc0" : "#a578e0" }, g);
+      }
+    });
+  } else if (species === "tulip") {
+    [[-10, 0], [0, -4], [10, 0]].forEach(([dx, dy]) => {
+      svgEl("ellipse", { cx: cx + dx * s, cy: yTop + dy * s, rx: 5 * s, ry: 7 * s, fill: "#e85d75", stroke: "#c94a63", "stroke-width": 1 }, g);
+    });
+  } else if (species === "sunflower") {
+    for (let k = 0; k < 8; k++) {
+      const a = (k / 8) * Math.PI * 2;
+      svgEl("circle", { cx: cx + Math.cos(a) * 11 * s, cy: yTop + Math.sin(a) * 11 * s, r: 4 * s, fill: "#ffcf3d" }, g);
+    }
+    svgEl("circle", { cx, cy: yTop, r: 9 * s, fill: "#ffd93d", stroke: "#e8a91c", "stroke-width": 1 }, g);
+    svgEl("circle", { cx, cy: yTop, r: 5 * s, fill: "#7d5a36" }, g);
+  } else if (species === "nightjasmine") {
+    for (let k = 0; k < 5; k++) {
+      const a = (k / 5) * Math.PI * 2 - Math.PI / 2;
+      svgEl("circle", { cx: cx + Math.cos(a) * 8 * s, cy: yTop + Math.sin(a) * 8 * s, r: 2.8 * s, fill: "#fff", stroke: "#d8d8e8", "stroke-width": 0.8 }, g);
+    }
+    svgEl("circle", { cx, cy: yTop, r: 3 * s, fill: "#ffe9a8" }, g);
+  } else if (species === "cherryblossom") {
+    // a small tree: pink canopy clustered over the stem top so it never floats
+    [[-12, -14], [4, -22], [14, -10], [-2, -6], [10, -24]].forEach(([dx, dy], k) => {
+      svgEl("circle", { cx: cx + dx * s, cy: yTop + dy * s, r: (9 + (k % 2) * 2.5) * s,
+        fill: k % 2 ? "#f2a0c0" : "#f7b8d0", opacity: 0.95 }, g);
+    });
+  }
+}
+
+function drawPlant(g, species, stage, cx, s) {
+  const p = PLANTS[species];
+  const yBase = 408;
+  if (stage === 0) {
+    // seed: three tiny dots on the soil
+    svgEl("circle", { cx: cx - 6 * s, cy: yBase - 2, r: 2.2 * s, fill: "#5c4632" }, g);
+    svgEl("circle", { cx: cx + 2 * s, cy: yBase - 4, r: 2.2 * s, fill: "#5c4632" }, g);
+    svgEl("circle", { cx: cx + 9 * s, cy: yBase - 2, r: 2 * s, fill: "#6b543a" }, g);
+    return;
+  }
+  const h = stage === 1 ? 16 * s : stage === 2 ? 30 * s : 44 * s;
+  // stem
+  svgEl("path", { d: "M" + cx + "," + yBase + " q" + (-3 * s) + "," + (-h / 2) + " " + (2 * s) + "," + (-h),
+    stroke: "#3f7d3a", "stroke-width": Math.max(1.5, 2.4 * s), fill: "none", "stroke-linecap": "round" }, g);
+  // leaves
+  svgEl("ellipse", { cx: cx - 7 * s, cy: yBase - h * 0.45, rx: 7 * s, ry: 3.4 * s, fill: "#4c8a44",
+    transform: "rotate(-28 " + (cx - 7 * s) + " " + (yBase - h * 0.45) + ")" }, g);
+  svgEl("ellipse", { cx: cx + 7 * s, cy: yBase - h * 0.6, rx: 7 * s, ry: 3.4 * s, fill: "#57a04d",
+    transform: "rotate(24 " + (cx + 7 * s) + " " + (yBase - h * 0.6) + ")" }, g);
+  const yTop = yBase - h;
+  if (stage === 1) return;
+  if (stage === 2) {
+    // closed bud
+    svgEl("ellipse", { cx: cx + 2 * s, cy: yTop, rx: 5 * s, ry: 7 * s, fill: p.bud, stroke: p.bloom, "stroke-width": 1 }, g);
+    return;
+  }
+  drawBloom(g, species, cx + 2 * s, yTop, s);
+}
+
+function renderPlants(now) {
+  const t = now === undefined ? Date.now() : now;
+  const wrap = $("plots");
+  if (!wrap) return;
+  const slots = wrap.querySelectorAll(".plot-slot");
+  let changed = false;
+  slots.forEach((slot, i) => {
+    const plot = state.plots[i];
+    if (!plot) return;
+    if (plot.species && updateDroop(plot, t)) changed = true;
+    slot.setAttribute("data-species", plot.species || "empty");
+    // Task 10: the bed's label names what grows there, so a keyboard user
+    // hears the same thing a sighted user sees.
+    slot.setAttribute("aria-label", "Bed " + (i + 1) + ": " + (plot.species
+      ? PLANTS[plot.species].name + ", " + ["seed", "sprout", "bud", "bloom"][growthStage(plot, t)] + (plot.droop ? ", thirsty" : "")
+      : "empty") + " — tap to tend it");
+    slot.classList.toggle("selected", i === selectedPlot);
+    let pg = slot.querySelector(".plant");
+    if (!pg) pg = svgEl("g", { "class": "plant" }, slot);
+    pg.innerHTML = "";
+    const bed = slot.querySelector("ellipse");
+    const cx = bed ? +bed.getAttribute("cx") : 200;
+    const s = bed ? +bed.getAttribute("rx") / 46 : 1;
+    if (plot.species) {
+      drawPlant(pg, plot.species, growthStage(plot, t), cx, s);
+      // Task 9: a bloom seen while she watches is pressed into the
+      // herbarium too — recordBloom is idempotent, so re-renders are free.
+      if (growthStage(plot, t) === 3) {
+        recordBloom(plot.species, plot.plantedAt + PLANTS[plot.species].bloomAt);
+      }
+      if (plot.droop) {
+        pg.setAttribute("transform", "rotate(7 " + cx + " 408)");
+        pg.setAttribute("opacity", "0.72");
+      } else {
+        pg.setAttribute("transform", "");
+        pg.setAttribute("opacity", "1");
+      }
+    }
+  });
+  if (changed) saveState(state);
+}
+
+function selectPlot(i) {
+  if (!state.plots[i]) return;
+  selectedPlot = i;
+  renderPlants();
+  renderCareBar();
+}
+
+function renderCareBar() {
+  const info = $("care-info"), btns = $("care-btns");
+  if (!info || !btns) return;
+  btns.innerHTML = "";
+  const plot = state.plots[selectedPlot];
+  if (!plot) { info.textContent = "Tap a bed to tend it 🌱"; return; }
+  if (!plot.species) {
+    info.textContent = "Bed " + (selectedPlot + 1) + " is empty — plant a seed 🌱";
+    state.unlocked.species.forEach((key) => {
+      const b = document.createElement("button");
+      b.className = "care-btn seed-btn";
+      b.textContent = "🌱 " + PLANTS[key].name;
+      b.addEventListener("click", () => plantSeed(selectedPlot, key));
+      btns.appendChild(b);
+    });
+    return;
+  }
+  const p = PLANTS[plot.species];
+  const stage = growthStage(plot);
+  const stageName = ["seed", "sprout", "bud", "bloom"][stage];
+  info.textContent = p.name + " · " + stageName +
+    (plot.droop ? " · thirsty — needs tending 💧" : "") +
+    " · 💧" + plot.care.water + " 🌙" + plot.care.moonlight + " ✂️" + plot.care.prune +
+    (isWellTended(plot) ? " · loved ♥" : "");
+  CARE_ACTIONS.forEach((a) => {
+    const b = document.createElement("button");
+    b.className = "care-btn";
+    b.textContent = CARE_LABEL[a];
+    b.addEventListener("click", () => carePlant(selectedPlot, a));
+    btns.appendChild(b);
+  });
+}
+
+/* ---------------- daily loop (Task 5) ---------------- */
+// One local day = one reveal: dayCount advances once per local day, and the
+// quote + fact follow dayCount. Quests reset on the same boundary.
+// Overnight Starlight is credited exactly once: a bloom counts only when
+// its stage crossed into bloom since lastSeenAt AND its bloomRewarded flag
+// is still false. Water refill is Task 6's job, not this section's.
+function todayKey(now) {
+  const d = new Date(now === undefined ? Date.now() : now);
+  const p = (n) => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+}
+
+// Fill in Task 5 fields for states saved before this task existed.
+function ensureDailyFields() {
+  if (!state) return;
+  if (state.lastSeenAt === undefined) state.lastSeenAt = null;
+  if (!state.questProgress) state.questProgress = {};
+  if (!state.quests) state.quests = { date: null, done: {} };
+  for (const plot of state.plots || []) {
+    if (plot.bloomRewarded === undefined) plot.bloomRewarded = false;
+  }
+}
+
+// Pre-flight ruling: direct state-field mutation, named addStarlight;
+// Task 6 reuses this helper rather than redefining it. All Starlight
+// income flows through here, so it is also the single place today's
+// collect-20 quest progress is counted.
+function addStarlight(n) {
+  const amt = n || 0;
+  state.starlight = Math.max(0, (state.starlight || 0) + amt);
+  if (amt > 0) {
+    state.questProgress = state.questProgress || {};
+    state.questProgress.starlight = (state.questProgress.starlight || 0) + amt;
+  }
+  saveState(state);
+  renderHUD();
+  return state.starlight;
+}
+
+// Advance the garden to a new local day. Returns true only when the day
+// actually changed. First open stamps started/lastDay and is not a new day.
+function advanceDay(now) {
+  const t = now === undefined ? Date.now() : now;
+  const today = todayKey(t);
+  ensureDailyFields();
+  if (state.started == null) {
+    state.started = today;
+    state.lastDay = today;
+    state.quests.date = today;
+    state.dayCount = 0;
+    saveState(state);
+    return false;
+  }
+  // A backward clock (or timezone change) must not count a new day:
+  // only advance when today is strictly after the stored lastDay.
+  // Lexicographic comparison works on YYYY-MM-DD keys. The != null
+  // guard preserves the advance for legacy saves with no lastDay.
+  if (state.lastDay != null && today <= state.lastDay) return false;
+  state.lastDay = today;
+  state.dayCount += 1;
+  state.water = CONFIG.waterMax; // Task 6: water refills each morning
+  state.quests.date = today;
+  state.quests.done = {};
+  state.questProgress = {};
+  saveState(state);
+  return true;
+}
+
+// Three daily quests. The third is the plan's "Find the hidden firefly"
+// (Task 8): only completable on hidden-letter days, when the golden
+// firefly appears. Task 5's bloom-1 stand-in ("Grow a bloom") is gone.
+const QUESTS = [
+  { id: "tend-3", text: "Tend a plant 3 times 💧", target: 3, reward: 10,
+    progress: () => (state.questProgress && state.questProgress.tend) || 0 },
+  { id: "collect-20", text: "Collect 20 ✨", target: 20, reward: 15,
+    progress: () => (state.questProgress && state.questProgress.starlight) || 0 },
+  { id: "firefly-1", text: "Find the hidden firefly ✨", target: 1, reward: 12,
+    progress: (now) => hiddenLetterFoundToday(now) ? 1 : 0 },
+];
+function questProgress(q, now) {
+  return Math.min(q.target, q.progress(now));
+}
+function questDone(q, now) {
+  return questProgress(q, now) >= q.target;
+}
+
+// Claim a completed quest's reward, exactly once per day.
+function claimQuest(id, now) {
+  const t = now === undefined ? Date.now() : now;
+  const q = QUESTS.find((x) => x.id === id);
+  if (!q) return false;
+  if (state.quests.date !== todayKey(t)) advanceDay(t); // keep the quest day current
+  // Task 6: a pre-Task-5 state can hold a null quest date while lastDay is
+  // already today, so advanceDay above changes nothing — repair it here.
+  if (state.quests.date == null) { state.quests.date = todayKey(t); saveState(state); }
+  if (state.quests.done[id]) return false;
+  if (!questDone(q, t)) return false;
+  state.quests.done[id] = true;
+  addStarlight(q.reward);
+  addXP(5); // Task 6: claiming a quest is +5 XP
+  saveState(state);
+  renderQuests(t);
+  toast("Quest complete! +" + q.reward + " ✨");
+  return true;
+}
+
+// Blooms that happened while she was away: stage was below bloom at the
+// last open and is bloom now, and the reward was never claimed. Credits
+// +12 Starlight per bloom, marks each rewarded, and always stamps
+// lastSeenAt — so a second open in the same session reports nothing new.
+// A plant that blooms while she watches still reports (and is credited)
+// on the next open: it did bloom while away, between opens.
+function overnightReport(now) {
+  const t = now === undefined ? Date.now() : now;
+  ensureDailyFields();
+  const seen = state.lastSeenAt;
+  const blooms = [];
+  if (seen != null) {
+    for (const plot of state.plots) {
+      if (!plot.species || !PLANTS[plot.species] || plot.plantedAt == null) continue;
+      if (plot.bloomRewarded) continue;
+      if (growthStage(plot, seen) < 3 && growthStage(plot, t) === 3) {
+        plot.bloomRewarded = true;
+        blooms.push({ species: plot.species, name: PLANTS[plot.species].name, starlight: 12 });
+        // Task 9: press the bloom into the herbarium, dated the day it
+        // actually bloomed (not the day she opened the garden).
+        recordBloom(plot.species, plot.plantedAt + PLANTS[plot.species].bloomAt);
+      }
+    }
+  }
+  let total = 0;
+  for (const b of blooms) { addStarlight(b.starlight); addXP(10); total += b.starlight; } // Task 6: a bloom is +10 XP
+  state.lastSeenAt = t;
+  saveState(state);
+  return { blooms, totalStarlight: total };
+}
+
+function showOvernight(rep) {
+  const ov = $("overnight");
+  if (!ov) return;
+  const lines = rep.blooms.map((b) => "🌸 Your " + b.name + " bloomed! +" + b.starlight + " ✨");
+  $("overnight-body").textContent = lines.join("\n") + "\nTotal: +" + rep.totalStarlight + " ✨";
+  ov.style.display = "flex";
+  // Task 10: focus the close button so keyboard users land inside the
+  // modal (guarded: old test harnesses have no focus method).
+  const c = $("overnight-close");
+  if (c && typeof c.focus === "function") c.focus();
+}
+function hideOvernight() {
+  const ov = $("overnight");
+  if (ov) ov.style.display = "none";
+}
+
+// One quote + one love fact per garden day, following dayCount (Season 1's
+// placement: under the scene). dayCount advances once per local day, so the
+// reveal advances once per day too.
+function renderDailyCard() {
+  if (!$("daily-head")) return; // same guard pattern as renderCareBar/renderPlants
+  $("daily-head").textContent = "📖 DAY " + (state.dayCount + 1) + " · A LITTLE LOVE SCIENCE";
+  $("daily-quote").textContent = "“" + CONFIG.quotes[state.dayCount % CONFIG.quotes.length] + "”";
+  const f = CONFIG.loveFacts[state.dayCount % CONFIG.loveFacts.length];
+  $("daily-fact-title").textContent = f.t;
+  $("daily-fact-text").textContent = f.x;
+}
+
+function renderQuests(now) {
+  const t = now === undefined ? Date.now() : now;
+  const list = $("quest-list");
+  if (!list) return;
+  list.innerHTML = "";
+  for (const q of QUESTS) {
+    const done = questDone(q, t);
+    const claimed = !!state.quests.done[q.id];
+    const row = document.createElement("div");
+    row.className = "quest-row";
+    const text = document.createElement("span");
+    text.className = "quest-text";
+    text.textContent = q.text;
+    const prog = document.createElement("span");
+    prog.className = "quest-progress";
+    prog.textContent = questProgress(q, t) + "/" + q.target;
+    const btn = document.createElement("button");
+    btn.className = "quest-claim";
+    btn.textContent = claimed ? "Done ♥" : "Claim +" + q.reward + " ✨";
+    btn.disabled = claimed || !done;
+    btn.addEventListener("click", () => claimQuest(q.id));
+    row.appendChild(text);
+    row.appendChild(prog);
+    row.appendChild(btn);
+    list.appendChild(row);
+  }
+}
+
+/* ---------------- economy: resources, levels, unlocks (Task 6) ---------------- */
+// XP curve (cumulative): level 2 on day ~2, level 10 near the day-30
+// finale. XP comes from planting (+3), care (+2), blooms (+10), quests (+5).
+// Task 11: re-fit to the 30-day diligent-player simulation — a player who
+// tends every day reaches level 10 near day 28, roughly a level every
+// 3 days. The old curve topped at 2000 XP and was unreachable: the same
+// simulation reached only 1322 XP (level 8) by day 30, because blooms are
+// one-time per plant and quests pay +5. Level 2 (50) and level 3 (120)
+// are unchanged, so the early game feels the same.
+const LEVEL_XP = [0, 50, 120, 210, 320, 450, 600, 780, 980, 1200];
+const PLOT_PRICES = { 4: 30, 5: 50, 6: 80, 7: 120, 8: 170, 9: 230 };
+const PLOT_LEVEL = { 4: 2, 5: 3, 6: 5, 7: 7, 8: 8, 9: 9 };
+// Unlocks granted AT each level (species + shop availability; plots are
+// level-gated AND bought with Starlight — see buyPlot).
+const UNLOCKS = {
+  2: { species: ["tulip"], decorations: [] },
+  3: { species: ["lavender"], decorations: [] },
+  4: { species: ["sunflower"], decorations: ["fairylights"] },
+  5: { species: ["nightjasmine"], decorations: ["bench"] },
+  6: { species: [], decorations: ["lanterns"] },
+  7: { species: ["cherryblossom"], decorations: ["fountain"] },
+  8: { species: [], decorations: ["pond"] },
+  9: { species: [], decorations: ["swing"] },
+  10: { species: [], decorations: ["steppingstones"] },
+};
+const DECOR_NAMES = { fairylights: "Fairy lights", bench: "Bench", lanterns: "Lanterns",
+  fountain: "Fountain", pond: "Pond", swing: "Swing", steppingstones: "Stepping stones" };
+
+function levelFor(xp) {
+  let lvl = 1;
+  for (let i = 0; i < LEVEL_XP.length; i++) if (xp >= LEVEL_XP[i]) lvl = i + 1;
+  return lvl;
+}
+function unlocksFor(level) {
+  const u = UNLOCKS[level] || { species: [], decorations: [] };
+  const plot = Object.keys(PLOT_LEVEL).find((n) => PLOT_LEVEL[n] === level);
+  return { species: [...u.species], decorations: [...u.decorations],
+           plot: plot === undefined ? null : +plot,
+           price: plot === undefined ? null : PLOT_PRICES[plot] };
+}
+function unlockSummary(level) {
+  const u = unlocksFor(level);
+  const bits = [];
+  u.species.forEach((s) => bits.push(PLANTS[s].name + " unlocked"));
+  if (u.plot) bits.push("a new bed is ready (" + u.price + " ✨)");
+  u.decorations.forEach((d) => bits.push((DECOR_NAMES[d] || d) + " in the shop"));
+  return bits.join(" · ");
+}
+function applyUnlocks(level) {
+  const u = unlocksFor(level);
+  u.species.forEach((s) => { if (!state.unlocked.species.includes(s)) state.unlocked.species.push(s); });
+  // unlocked.decorations = available in the shop (Task 7); ownership is tracked there.
+  u.decorations.forEach((d) => { if (!state.unlocked.decorations.includes(d)) state.unlocked.decorations.push(d); });
+}
+function addXP(n) {
+  const amt = n || 0;
+  if (amt <= 0) return state.level;
+  state.xp = (state.xp || 0) + amt;
+  const nl = levelFor(state.xp);
+  if (nl > state.level) {
+    const bits = [];
+    for (let l = state.level + 1; l <= nl; l++) {
+      applyUnlocks(l);
+      const s = unlockSummary(l);
+      if (s) bits.push(s);
+    }
+    state.level = nl;
+    renderPlotBuy(); // fix round 1: refresh the plot-buy button the moment a bed unlocks
+    renderShop(); // Task 7: refresh the shop the moment a decoration unlocks (same stale-button lesson)
+    renderCareBar(); // fix round 1: refresh the seed list — a quest-claim level-up unlocks species too
+    toast("Level " + nl + "! " + bits.join(" · ") + " 🌙");
+  }
+  saveState(state);
+  renderHUD();
+  return state.level;
+}
+
+// Buy the next bed: level-gated AND priced in Starlight. Spending goes
+// through addStarlight (which clamps at 0), but the balance is pre-checked
+// so the deduction is exact.
+function buyPlot() {
+  const next = state.unlocked.plots + 1;
+  if (next > 9 || state.plots.length >= 9) { toast("Your garden is full 🌙"); return false; }
+  if (state.level < PLOT_LEVEL[next]) { toast("Reach level " + PLOT_LEVEL[next] + " to open a new bed 🔒"); return false; }
+  const price = PLOT_PRICES[next];
+  if ((state.starlight || 0) < price) { toast("Not enough Starlight yet ✨ (" + price + " needed)"); return false; }
+  addStarlight(-price);
+  state.plots.push(freshPlot());
+  state.unlocked.plots = next;
+  saveState(state);
+  buildScene();
+  renderPlants();
+  renderCareBar();
+  renderHUD();
+  renderPlotBuy();
+  toast("A new bed is ready 🌱");
+  return true;
+}
+
+function renderHUD() {
+  const hud = $("hud");
+  if (!hud) return; // same guard pattern as renderCareBar (old test harnesses)
+  $("hud-water").textContent = "💧 " + state.water + "/" + CONFIG.waterMax;
+  $("hud-star").textContent = "✨ " + (state.starlight || 0);
+  const xpEl = $("hud-xp");
+  if (state.level >= 10) xpEl.textContent = "♥ Lv 10 · Master Gardener 🌙";
+  else xpEl.textContent = "♥ Lv " + state.level + " · " + state.xp + "/" + LEVEL_XP[state.level] + " XP";
+}
+
+function renderPlotBuy() {
+  const wrap = $("plot-buy");
+  if (!wrap) return; // same guard pattern as renderCareBar (old test harnesses)
+  wrap.innerHTML = "";
+  const next = state.unlocked.plots + 1;
+  const btn = document.createElement("button");
+  btn.className = "care-btn";
+  if (next > 9 || state.plots.length >= 9) {
+    btn.textContent = "🌙 All beds open";
+    btn.disabled = true;
+  } else if (state.level < PLOT_LEVEL[next]) {
+    btn.textContent = "🔒 New bed at level " + PLOT_LEVEL[next];
+    btn.disabled = true;
+  } else {
+    btn.textContent = "➕ New bed — " + PLOT_PRICES[next] + " ✨";
+    btn.disabled = (state.starlight || 0) < PLOT_PRICES[next];
+    btn.addEventListener("click", () => buyPlot());
+  }
+  wrap.appendChild(btn);
+}
+
+/* ---------------- shop & decorations (Task 7) ---------------- */
+// Shop availability is level-gated (state.unlocked.decorations, Task 6);
+// ownership and placement are tracked here, separately, in state.decorations:
+//   owned: [ids]              — bought, whether placed or in the basket
+//   placed: { slotIndex: id } — which decoration sits on which scene slot
+// Six slots, seven decorations: one always stays in the basket until a slot
+// frees up. Removing refunds half the price, rounded down.
+const SHOP = {
+  fairylights:    { name: "Fairy lights",     price: 40,  level: 4,  icon: "✨", blurb: "A string of warm lights for the evening" },
+  bench:          { name: "Bench",            price: 60,  level: 5,  icon: "🪑", blurb: "Somewhere to sit and watch it grow" },
+  lanterns:       { name: "Lanterns",         price: 80,  level: 6,  icon: "🏮", blurb: "Three little lanterns for the path" },
+  fountain:       { name: "Fountain",         price: 120, level: 7,  icon: "⛲", blurb: "A little fountain that sings at dusk" },
+  pond:           { name: "Pond",             price: 150, level: 8,  icon: "🪷", blurb: "Still water, lily pads, one lotus" },
+  swing:          { name: "Swing",            price: 180, level: 9,  icon: "🌸", blurb: "A swing that sways in the evening breeze" },
+  steppingstones: { name: "Stepping stones",  price: 200, level: 10, icon: "🪨", blurb: "A winding path of smooth stones" },
+};
+// Fixed spots on the front lawn (viewBox 400x470), clear of the beds row,
+// the stone path, and the fence. The decorations group renders after the
+// foreground grass, so sprites sit in front of it.
+const DECOR_SLOTS = [
+  { x: 42, y: 448 }, { x: 118, y: 454 }, { x: 172, y: 450 },
+  { x: 248, y: 454 }, { x: 318, y: 450 }, { x: 366, y: 446 },
+];
+let placingId = null; // session-only: the owned decoration being moved
+
+// Fill in Task 7 fields for states saved before this task existed.
+function ensureShopFields() {
+  if (!state) return;
+  if (!state.unlocked) state.unlocked = { plots: 3, species: ["moonflower"], decorations: [] };
+  if (!Array.isArray(state.unlocked.decorations)) state.unlocked.decorations = [];
+  if (!state.decorations) state.decorations = { owned: [], placed: {} };
+  if (!Array.isArray(state.decorations.owned)) state.decorations.owned = [];
+  if (!state.decorations.placed || typeof state.decorations.placed !== "object") state.decorations.placed = {};
+  if (state.shopOpen === undefined) state.shopOpen = true; // Task 10: drawer starts open
+}
+// Task 10: the shop is a collapsible drawer — the toggle persists, so a
+// collapsed shop stays collapsed across opens.
+function toggleShop() {
+  ensureShopFields();
+  state.shopOpen = state.shopOpen === false;
+  saveState(state);
+  renderShop();
+}
+function firstFreeSlot() {
+  for (let i = 0; i < DECOR_SLOTS.length; i++) {
+    if (state.decorations.placed[String(i)] === undefined) return i;
+  }
+  return -1;
+}
+
+// Buy: level-gated AND priced in Starlight, following the buyPlot pattern
+// (balance pre-checked, spending through addStarlight which clamps at 0).
+// A bought decoration is placed in the first free slot at once; if every
+// slot is full it waits in the basket until a spot frees up.
+function buyDecoration(id) {
+  ensureShopFields();
+  const item = SHOP[id];
+  if (!item) { toast("No such decoration 🌱"); return false; }
+  if (!state.unlocked.decorations.includes(id)) { toast((DECOR_NAMES[id] || item.name) + " unlocks at level " + item.level + " 🔒"); return false; }
+  if (state.decorations.owned.includes(id)) { toast("You already own the " + item.name.toLowerCase() + " ♥"); return false; }
+  if ((state.starlight || 0) < item.price) { toast("Not enough Starlight yet ✨ (" + item.price + " needed)"); return false; }
+  addStarlight(-item.price);
+  state.decorations.owned.push(id);
+  const slot = firstFreeSlot();
+  if (slot >= 0) {
+    state.decorations.placed[String(slot)] = id;
+    toast(item.name + " placed in your garden " + item.icon);
+  } else {
+    toast(item.name + " is yours — kept in your basket until a spot frees up 🧺");
+  }
+  saveState(state);
+  renderShop();
+  renderDecorations();
+  return true;
+}
+
+// Move an owned decoration to a free slot. Same slot is a harmless no-op.
+function placeDecoration(id, slot) {
+  ensureShopFields();
+  if (!SHOP[id]) return false;
+  if (!state.decorations.owned.includes(id)) { toast("You don't own that yet 🌱"); return false; }
+  const s = +slot;
+  if (!Number.isInteger(s)) return false; // Task 10: 1.5 would strand a "1.5" key no render reads
+  if (!(s >= 0 && s < DECOR_SLOTS.length)) return false;
+  const current = state.decorations.placed[String(s)];
+  if (current === id) return true;
+  if (current !== undefined) { toast("That spot is taken 🌸"); return false; }
+  for (const k of Object.keys(state.decorations.placed)) {
+    if (state.decorations.placed[k] === id) delete state.decorations.placed[k];
+  }
+  state.decorations.placed[String(s)] = id;
+  saveState(state);
+  renderShop();
+  renderDecorations();
+  return true;
+}
+
+// Remove: ownership ends, the slot frees, half the price comes back.
+function removeDecoration(id) {
+  ensureShopFields();
+  const item = SHOP[id];
+  if (!item) return false;
+  if (!state.decorations.owned.includes(id)) return false;
+  const refund = Math.floor(item.price / 2);
+  if (placingId === id) placingId = null; // never stay in placing mode for a removed item
+  state.decorations.owned = state.decorations.owned.filter((d) => d !== id);
+  for (const k of Object.keys(state.decorations.placed)) {
+    if (state.decorations.placed[k] === id) delete state.decorations.placed[k];
+  }
+  addStarlight(refund);
+  saveState(state);
+  renderShop();
+  renderDecorations();
+  toast("Put away the " + item.name.toLowerCase() + " — +" + refund + " ✨ back");
+  return true;
+}
+
+// Draw one decoration sprite, base at (x, y) on the ground line.
+function decorSprite(id, x, y) {
+  const g = svgEl("g", { "class": "decor-sprite", transform: "translate(" + x + "," + y + ")" });
+  const P = (tag, attrs) => svgEl(tag, attrs, g);
+  if (id === "fairylights") {
+    P("rect", { x: -32, y: -34, width: 3, height: 34, rx: 1.5, fill: "#5c4632" });
+    P("rect", { x: 29, y: -34, width: 3, height: 34, rx: 1.5, fill: "#5c4632" });
+    P("path", { d: "M-30,-34 Q0,-16 30,-34", fill: "none", stroke: "#5c4632", "stroke-width": 1.6 });
+    [[-24, -30.8], [-12, -26.4], [0, -25], [12, -26.4], [24, -30.8]].forEach(([bx, by]) => {
+      P("circle", { cx: bx, cy: by, r: 6.5, fill: "#ffd97a", opacity: 0.45, "class": "lantern-glow" });
+      P("circle", { cx: bx, cy: by, r: 3, fill: "#ffe9a8" });
+    });
+  } else if (id === "bench") {
+    P("rect", { x: -24, y: -36, width: 48, height: 8, rx: 3, fill: "#a9744f", stroke: "#8a5a38", "stroke-width": 1.4 });
+    P("rect", { x: -24, y: -16, width: 48, height: 6, rx: 3, fill: "#a9744f", stroke: "#8a5a38", "stroke-width": 1.4 });
+    P("rect", { x: -20, y: -10, width: 4, height: 10, fill: "#8a5a38" });
+    P("rect", { x: 16, y: -10, width: 4, height: 10, fill: "#8a5a38" });
+    P("rect", { x: -22, y: -30, width: 3, height: 20, fill: "#8a5a38" });
+    P("rect", { x: 19, y: -30, width: 3, height: 20, fill: "#8a5a38" });
+  } else if (id === "lanterns") {
+    [[-22, 26], [0, 34], [22, 22]].forEach(([lx, lh]) => {
+      P("rect", { x: lx - 1.5, y: -lh, width: 3, height: lh, rx: 1.5, fill: "#5c4632" });
+      P("rect", { x: lx - 6, y: -lh - 11, width: 12, height: 11, rx: 3, fill: "#3a2a1e", stroke: "#c9a35c", "stroke-width": 1.2 });
+      P("circle", { cx: lx, cy: -lh - 5.5, r: 8, fill: "#ffd97a", opacity: 0.55, "class": "lantern-glow" });
+      P("circle", { cx: lx, cy: -lh - 5.5, r: 2.6, fill: "#ffe9a8" });
+    });
+  } else if (id === "fountain") {
+    P("ellipse", { cx: 0, cy: -2, rx: 26, ry: 7, fill: "#b8c4c8", stroke: "#8fa3b8", "stroke-width": 1.6 });
+    P("ellipse", { cx: 0, cy: -4, rx: 20, ry: 4.5, fill: "#a5d4e8" });
+    P("rect", { x: -20, y: -15, width: 40, height: 12, rx: 5, fill: "#9fb8c8", stroke: "#8fa3b8", "stroke-width": 1.4 });
+    P("ellipse", { cx: 0, cy: -15, rx: 16, ry: 3.5, fill: "#c8e4f2" });
+    P("rect", { x: -2, y: -30, width: 4, height: 16, fill: "#b8c4c8" });
+    P("ellipse", { cx: 0, cy: -30, rx: 8, ry: 3, fill: "#d8e8f0" });
+    P("path", { d: "M-6,-30 Q-14,-40 -20,-32", fill: "none", stroke: "#bfe6ff", "stroke-width": 1.8, "stroke-linecap": "round" });
+    P("path", { d: "M6,-30 Q14,-40 20,-32", fill: "none", stroke: "#bfe6ff", "stroke-width": 1.8, "stroke-linecap": "round" });
+  } else if (id === "pond") {
+    P("ellipse", { cx: 0, cy: -4, rx: 30, ry: 9, fill: "#7fb8d9", stroke: "#5a93b8", "stroke-width": 1.6 });
+    P("ellipse", { cx: 0, cy: -5, rx: 22, ry: 6, fill: "#a5d4e8" });
+    P("circle", { cx: -14, cy: -6, r: 5, fill: "#5d9b52" });
+    P("circle", { cx: 16, cy: -3, r: 4.5, fill: "#5d9b52" });
+    P("ellipse", { cx: 2, cy: -10, rx: 3, ry: 5, fill: "#ff9ebb", transform: "rotate(-24 2 -10)" });
+    P("ellipse", { cx: 2, cy: -10, rx: 3, ry: 5, fill: "#ff9ebb", transform: "rotate(24 2 -10)" });
+    P("ellipse", { cx: 2, cy: -11, rx: 2.6, ry: 5, fill: "#ffc2d4" });
+    P("circle", { cx: 2, cy: -8, r: 1.8, fill: "#ffd93d" });
+  } else if (id === "swing") {
+    P("line", { x1: -28, y1: 0, x2: -24, y2: -40, stroke: "#8a5a38", "stroke-width": 3, "stroke-linecap": "round" });
+    P("line", { x1: 28, y1: 0, x2: 24, y2: -40, stroke: "#8a5a38", "stroke-width": 3, "stroke-linecap": "round" });
+    P("line", { x1: -24, y1: -40, x2: 24, y2: -40, stroke: "#8a5a38", "stroke-width": 3, "stroke-linecap": "round" });
+    P("line", { x1: -10, y1: -40, x2: -10, y2: -16, stroke: "#5c4632", "stroke-width": 1.8 });
+    P("line", { x1: 10, y1: -40, x2: 10, y2: -16, stroke: "#5c4632", "stroke-width": 1.8 });
+    P("rect", { x: -15, y: -16, width: 30, height: 5, rx: 2.5, fill: "#a9744f", stroke: "#8a5a38", "stroke-width": 1.2 });
+  } else if (id === "steppingstones") {
+    P("ellipse", { cx: -22, cy: -6, rx: 10, ry: 4, fill: "#d9c7a8", stroke: "#b89b6d", "stroke-width": 1.4 });
+    P("ellipse", { cx: 0, cy: -2, rx: 11, ry: 4.5, fill: "#d9c7a8", stroke: "#b89b6d", "stroke-width": 1.4 });
+    P("ellipse", { cx: 22, cy: -8, rx: 10, ry: 4, fill: "#d9c7a8", stroke: "#b89b6d", "stroke-width": 1.4 });
+    P("circle", { cx: -20, cy: -7, r: 1.6, fill: "#b89b6d" });
+    P("circle", { cx: 3, cy: -3, r: 1.6, fill: "#b89b6d" });
+  }
+  return g;
+}
+
+function renderDecorations() {
+  const g = $("decorations");
+  if (!g) return; // same guard pattern as renderHUD/renderPlotBuy (old test harnesses)
+  ensureShopFields();
+  g.innerHTML = "";
+  for (const k of Object.keys(state.decorations.placed)) {
+    const id = state.decorations.placed[k];
+    const slot = DECOR_SLOTS[+k];
+    if (!slot || !SHOP[id]) continue;
+    const dg = decorSprite(id, slot.x, slot.y);
+    dg.setAttribute("data-decor", id);
+    dg.setAttribute("data-slot", k);
+    dg.addEventListener("click", () => toast((DECOR_NAMES[id] || id) + " — remove it from the shop to get half your Starlight back ✨"));
+    g.appendChild(dg);
+  }
+  // While moving a decoration, show tap targets on the free slots.
+  if (placingId) {
+    for (let i = 0; i < DECOR_SLOTS.length; i++) {
+      if (state.decorations.placed[String(i)] !== undefined) continue;
+      const s = DECOR_SLOTS[i];
+      const name = (DECOR_NAMES[placingId] || placingId).toLowerCase();
+      const m = svgEl("g", { "class": "decor-slot", "data-slot": i, tabindex: "0", role: "button", "aria-label": "Place " + name + " in slot " + (i + 1) }, g);
+      svgEl("circle", { cx: s.x, cy: s.y - 14, r: 24, "class": "slot-ring" }, m);
+      const t = svgEl("text", { x: s.x, y: s.y - 10, "text-anchor": "middle", "font-size": 16, fill: "#ffd97a" }, m);
+      t.textContent = "✨";
+      const placeHere = () => {
+        // placeDecoration renders while placingId is still set, so clear it
+        // first and re-render — otherwise the shop keeps showing "Cancel",
+        // the placing hint, and the slot markers after the move (Task 6
+        // stale-button lesson: render after the state change, not before).
+        if (placeDecoration(placingId, i)) {
+          placingId = null;
+          renderShop();
+          renderDecorations();
+        }
+      };
+      m.addEventListener("click", placeHere);
+      m.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); placeHere(); }
+      });
+    }
+  }
+}
+
+function renderShop() {
+  const list = $("shop-list");
+  if (!list) return; // same guard pattern as renderHUD/renderPlotBuy (old test harnesses)
+  ensureShopFields();
+  list.innerHTML = "";
+  // Task 10: apply the persisted drawer state on every render, so a
+  // collapsed shop stays collapsed across opens and reloads.
+  list.style.display = state.shopOpen === false ? "none" : "";
+  const tgl = $("shop-toggle");
+  if (tgl) {
+    tgl.setAttribute("aria-expanded", state.shopOpen === false ? "false" : "true");
+    tgl.textContent = state.shopOpen === false ? "▸" : "▾";
+    tgl.setAttribute("aria-label", state.shopOpen === false ? "Expand shop" : "Collapse shop");
+  }
+  const hint = $("shop-hint");
+  if (hint) hint.textContent = placingId
+    ? "Tap a glowing spot in the garden to place the " + (DECOR_NAMES[placingId] || placingId).toLowerCase() + " ✨ (tap Move again to cancel)"
+    : "";
+  for (const id of Object.keys(SHOP)) {
+    const item = SHOP[id];
+    const row = document.createElement("div");
+    row.className = "shop-row";
+    row.setAttribute("data-decor", id);
+    const info = document.createElement("div");
+    info.className = "shop-info";
+    const name = document.createElement("div");
+    name.className = "shop-name";
+    name.textContent = item.icon + " " + item.name;
+    const blurb = document.createElement("div");
+    blurb.className = "shop-blurb";
+    blurb.textContent = item.blurb;
+    info.appendChild(name);
+    info.appendChild(blurb);
+    row.appendChild(info);
+    const owned = state.decorations.owned.includes(id);
+    const unlocked = state.unlocked.decorations.includes(id);
+    if (!unlocked) {
+      const b = document.createElement("button");
+      b.className = "shop-btn";
+      b.textContent = "🔒 Level " + item.level;
+      b.disabled = true;
+      row.appendChild(b);
+    } else if (!owned) {
+      const b = document.createElement("button");
+      b.className = "shop-btn";
+      b.textContent = "Buy — " + item.price + " ✨";
+      b.disabled = (state.starlight || 0) < item.price;
+      b.addEventListener("click", () => buyDecoration(id));
+      row.appendChild(b);
+    } else {
+      const placed = Object.values(state.decorations.placed).includes(id);
+      const tag = document.createElement("button");
+      tag.className = "shop-btn";
+      tag.textContent = placed ? "✓ Placed" : "🧺 In basket";
+      tag.disabled = true;
+      row.appendChild(tag);
+      const mv = document.createElement("button");
+      mv.className = "shop-btn";
+      mv.textContent = placingId === id ? "Cancel" : "↔ Move";
+      mv.addEventListener("click", () => {
+        placingId = placingId === id ? null : id;
+        renderShop();
+        renderDecorations();
+      });
+      row.appendChild(mv);
+      const rm = document.createElement("button");
+      rm.className = "shop-btn";
+      rm.textContent = "✕ Remove (+" + Math.floor(item.price / 2) + " ✨)";
+      rm.addEventListener("click", () => removeDecoration(id));
+      row.appendChild(rm);
+    }
+    list.appendChild(row);
+  }
+}
+
+/* ---------------- surprises & weather (Task 8) ---------------- */
+// One surprise + one weather per local day, picked deterministically from
+// the date itself — so a day's events are stable across opens, and a
+// surprise can never re-roll (repeat differently) within the same day.
+// Claim flags live in state.surprises[dateKey], so a claimed surprise
+// stays claimed. Weather and surprises are gifts, never punishments:
+// rain only helps, nothing here ever harms a plant.
+function daySeed(key) {
+  // FNV-1a (Task 11): the old polynomial hash bunched sequential dates, so
+  // full moons landed on only ~2.5% of days instead of the claimed 10%.
+  // FNV avalanches the last digits and measures ~19/9/13/59 over a year.
+  let h = 2166136261;
+  for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return ((h >>> 0) % 1000); // 0..999
+}
+function weatherToday(now) {
+  const s = daySeed(todayKey(now));
+  if (s < 200) return "rain";      // 20% of days: gentle rain
+  if (s < 300) return "meteor";    // 10%: meteor shower
+  if (s < 400) return "fullmoon";  // 10%: full moon
+  return "clear";                  // 60%: clear skies
+}
+function maybeSurprise(now) {
+  const r = (daySeed(todayKey(now)) * 7 + 13) % 100;
+  if (r < 20) return "mystery-seed";
+  if (r < 40) return "cat";
+  if (r < 70) return "hidden-letter"; // 30%: the hidden firefly's day
+  if (r < 85) return "shooting-star";
+  return null; // 15% of days: no surprise — the garden keeps its secrets
+}
+
+// Hidden firefly letters, in Suhail's voice. One per find, picked by date;
+// Task 9's herbarium reads state.hiddenLetters for the ones she found.
+const HIDDEN_LETTERS = [
+  "P.S. — I planted this one thinking of you. It bloomed for you, princess. — Suhail ji ♥",
+  "You found me! I was hiding in the fireflies, waiting for you to look. — Suhail ji ♥",
+  "Every firefly in this garden learned to glow from you, my baby. — Suhail ji ♥",
+  "If you are reading this, you looked closely — that is my favorite thing about you. — Suhail ji ♥",
+  "One day I will tell you all of this in person. Until then, the fireflies keep my secrets. — Suhail ji ♥",
+  "Somewhere between the fireflies, I hid one more secret: I love you, I love you, I love you. — Suhail ji ♥",
+];
+function hiddenLetterText(now) {
+  return HIDDEN_LETTERS[daySeed(todayKey(now)) % HIDDEN_LETTERS.length];
+}
+
+// Fill in Task 8 fields for states saved before this task existed.
+function ensureSurpriseFields() {
+  if (!state) return;
+  if (!state.surprises || typeof state.surprises !== "object") state.surprises = {};
+  if (!Array.isArray(state.hiddenLetters)) state.hiddenLetters = [];
+}
+// Today's per-date record: claim flags only (weather + surprise are
+// computed from the date, never stored).
+function todaySurpriseRec(now) {
+  ensureSurpriseFields();
+  const key = todayKey(now);
+  if (!state.surprises[key]) state.surprises[key] = {};
+  return state.surprises[key];
+}
+function hiddenLetterFoundToday(now) {
+  const rec = (state.surprises || {})[todayKey(now)];
+  return !!(rec && rec.letterRead);
+}
+
+// Rain waters every planted plot for free, once per rain day. Rain is a
+// gift, never a punishment: it only adds water care and revives droop —
+// it never spends her water, never counts toward the tend quest (quests
+// are for her own hands), and never touches growth timers.
+function applyRain(now) {
+  const t = now === undefined ? Date.now() : now;
+  if (weatherToday(t) !== "rain") return 0;
+  const rec = todaySurpriseRec(t);
+  if (rec.rainApplied) return 0;
+  let n = 0;
+  for (const plot of state.plots) {
+    if (!plot.species) continue;
+    plot.care.water += 1;
+    plot.lastCareAt = t;
+    plot.droop = false;
+    n += 1;
+  }
+  rec.rainApplied = true;
+  saveState(state);
+  renderPlants(t);
+  renderCareBar();
+  renderHUD();
+  if (n) toast("Gentle rain watered your garden 🌧️");
+  return n;
+}
+
+// Mystery seed: a glowing seed appears; tapping plants a random unlocked
+// species in the first empty bed, free. A full garden means the seed
+// waits — beds never free up, so it simply stays unclaimed that day.
+function claimMysterySeed(now) {
+  const t = now === undefined ? Date.now() : now;
+  if (maybeSurprise(t) !== "mystery-seed") return false;
+  const rec = todaySurpriseRec(t);
+  if (rec.seedClaimed) return false;
+  const empty = state.plots.findIndex((p) => !p.species);
+  if (empty < 0) return false;
+  const pool = state.unlocked.species.length ? state.unlocked.species : ["moonflower"];
+  const species = pool[daySeed(todayKey(t)) % pool.length];
+  rec.seedClaimed = true;
+  rec.seedSpecies = species;
+  plantSeed(empty, species, t);
+  renderSurprise(t);
+  toast("A mystery seed! It grew into a " + PLANTS[species].name + " 🌱");
+  return true;
+}
+
+// Wandering cat: say hello, get a gift. Once per day.
+function claimCat(now) {
+  const t = now === undefined ? Date.now() : now;
+  if (maybeSurprise(t) !== "cat") return false;
+  const rec = todaySurpriseRec(t);
+  if (rec.catClaimed) return false;
+  rec.catClaimed = true;
+  addStarlight(5);
+  renderQuests(t); // Task 10: the collect-20 bar must move at once
+  saveState(state);
+  renderSurprise(t);
+  toast("The garden cat left you a gift! 🐱 +5 ✨");
+  return true;
+}
+
+// Hidden firefly letter: tap the one golden firefly to read Suhail's
+// hidden note. This is the firefly quest's target (Task 5's bloom-1
+// stand-in is gone — see QUESTS).
+function claimHiddenLetter(now) {
+  const t = now === undefined ? Date.now() : now;
+  if (maybeSurprise(t) !== "hidden-letter") return false;
+  const rec = todaySurpriseRec(t);
+  if (rec.letterRead) return false;
+  rec.letterRead = true;
+  ensureSurpriseFields();
+  state.hiddenLetters.push({ date: todayKey(t), text: hiddenLetterText(t) });
+  saveState(state);
+  renderSurprise(t);
+  renderQuests(t);
+  toast("You found the hidden firefly! ✨");
+  return true;
+}
+
+// Shooting star: tap it, make a wish. Once per day.
+function claimShootingStar(now) {
+  const t = now === undefined ? Date.now() : now;
+  if (maybeSurprise(t) !== "shooting-star") return false;
+  const rec = todaySurpriseRec(t);
+  if (rec.starClaimed) return false;
+  rec.starClaimed = true;
+  addStarlight(10);
+  renderQuests(t); // Task 10: the collect-20 bar must move at once
+  saveState(state);
+  renderSurprise(t);
+  toast("Make a wish! 🌠 +10 ✨");
+  return true;
+}
+
+// Full moon: the night itself pays a small bonus, once per day, applied
+// with the day's events (no tap needed — the moon is not a sprite).
+function claimFullMoon(now) {
+  const t = now === undefined ? Date.now() : now;
+  if (weatherToday(t) !== "fullmoon") return false;
+  const rec = todaySurpriseRec(t);
+  if (rec.moonClaimed) return false;
+  rec.moonClaimed = true;
+  addStarlight(5);
+  renderQuests(t); // Task 10: the collect-20 bar must move at once
+  saveState(state);
+  toast("Full moon tonight — the garden glows for you 🌕 +5 ✨");
+  return true;
+}
+
+const WEATHER_LINES = {
+  rain: "🌧️ Gentle rain today — the garden drinks for free, princess",
+  meteor: "🌠 A meteor shower tonight — look up and make a wish",
+  fullmoon: "🌕 Full moon tonight — the garden glows just for you",
+  clear: "☀️ Clear skies today — a perfect day for tending",
+};
+function renderWeather(now) {
+  const t = now === undefined ? Date.now() : now;
+  const line = $("weather-text");
+  const layer = $("fx-layer");
+  if (!line) return; // same guard pattern as renderHUD (old test harnesses)
+  line.textContent = WEATHER_LINES[weatherToday(t)];
+  if (!layer) return;
+  layer.querySelectorAll(".rain-drop").forEach((d) => d.remove());
+  layer.querySelectorAll(".meteor-streak").forEach((d) => d.remove());
+  if (REDUCED) return; // calm sky, no falling drops or streaks
+  if (weatherToday(t) === "rain") {
+    for (let i = 0; i < 12; i++) {
+      const d = document.createElement("div");
+      d.className = "rain-drop";
+      d.style.left = (Math.random() * 96) + "%";
+      d.style.animationDelay = (-Math.random() * 1.1) + "s";
+      layer.appendChild(d);
+    }
+  } else if (weatherToday(t) === "meteor") {
+    for (let i = 0; i < 4; i++) {
+      const d = document.createElement("div");
+      d.className = "meteor-streak";
+      d.style.left = (15 + Math.random() * 60) + "%";
+      d.style.top = (4 + Math.random() * 18) + "%";
+      d.style.animationDelay = (-Math.random() * 3) + "s";
+      layer.appendChild(d);
+    }
+  }
+}
+
+// Today's surprise sprite + card. Sprites live in #fx-layer (like the
+// ambient fireflies) and are keyboard-operable — the Task 7 lesson:
+// every tappable thing gets tabindex + role + an Enter/Space handler.
+// The handler captures the render date, so a tap always claims the day
+// the sprite was drawn for.
+function surpriseSprite(now, kind) {
+  const t = now === undefined ? Date.now() : now;
+  const layer = $("fx-layer");
+  if (!layer) return null;
+  const s = daySeed(todayKey(t));
+  const spots = {
+    "mystery-seed": { left: 44 + (s % 12), top: 82, glyph: "🌰", label: "Mystery seed — tap to plant it" },
+    "cat": { left: 62 + (s % 15), top: 76, glyph: "🐱", label: "Wandering cat — tap to say hello" },
+    "hidden-letter": { left: 10 + (s % 70), top: 20 + (s % 45), glyph: null, label: "Hidden firefly — tap to read its secret" },
+    "shooting-star": { left: 55 + (s % 20), top: 6 + (s % 10), glyph: "🌠", label: "Shooting star — tap to make a wish" },
+  };
+  const spot = spots[kind];
+  if (!spot) return null;
+  const el = document.createElement("div");
+  el.className = "surprise-sprite" + (kind === "hidden-letter" ? " golden-firefly" : "");
+  if (kind !== "hidden-letter") el.textContent = spot.glyph;
+  el.style.left = spot.left + "%";
+  el.style.top = spot.top + "%";
+  el.setAttribute("tabindex", "0");
+  el.setAttribute("role", "button");
+  el.setAttribute("aria-label", spot.label);
+  const claim = { "mystery-seed": claimMysterySeed, "cat": claimCat,
+                  "hidden-letter": claimHiddenLetter, "shooting-star": claimShootingStar }[kind];
+  el.addEventListener("click", () => claim(t));
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { if (e.preventDefault) e.preventDefault(); claim(t); }
+  });
+  layer.appendChild(el);
+  return el;
+}
+
+function renderSurprise(now) {
+  const t = now === undefined ? Date.now() : now;
+  const text = $("surprise-text");
+  const layer = $("fx-layer");
+  if (!text) return; // same guard pattern as renderHUD (old test harnesses)
+  if (layer) layer.querySelectorAll(".surprise-sprite").forEach((el) => el.remove());
+  const kind = maybeSurprise(t);
+  const rec = (state.surprises || {})[todayKey(t)] || {};
+  if (kind === "hidden-letter" && rec.letterRead) {
+    const found = (state.hiddenLetters || []).find((l) => l.date === todayKey(t));
+    text.textContent = "💌 " + (found ? found.text : hiddenLetterText(t));
+    return;
+  }
+  if (kind === "mystery-seed" && rec.seedClaimed) {
+    const name = rec.seedSpecies && PLANTS[rec.seedSpecies] ? PLANTS[rec.seedSpecies].name : "a surprise plant";
+    text.textContent = "🌱 The mystery seed grew into a " + name + "!";
+    return;
+  }
+  if (kind === "cat" && rec.catClaimed) {
+    text.textContent = "🐱 The cat purred, left you +5 ✨, and wandered off to nap in the sun.";
+    return;
+  }
+  if (kind === "shooting-star" && rec.starClaimed) {
+    text.textContent = "🌠 Your wish is on its way… +10 ✨";
+    return;
+  }
+  if (!kind) {
+    text.textContent = "The garden keeps its secrets today… come back tomorrow, princess ✨";
+    return;
+  }
+  const hints = {
+    "mystery-seed": "🌰 A mystery seed is glowing in the garden — tap it to plant it!",
+    "cat": "🐱 A wandering cat is visiting the garden — tap to say hello!",
+    "hidden-letter": "✨ A hidden firefly is glowing somewhere in the garden — can you find it?",
+    "shooting-star": "🌠 A shooting star is crossing the sky — tap it and make a wish!",
+  };
+  text.textContent = hints[kind];
+  surpriseSprite(t, kind);
+}
+
+// Boot + day-open hook: today's weather banner, rain watering, the full
+// moon's bonus, and the surprise sprite + card. Returns what today holds.
+function applyTodayEvents(now) {
+  const t = now === undefined ? Date.now() : now;
+  ensureSurpriseFields();
+  renderWeather(t);
+  const watered = applyRain(t);
+  if (weatherToday(t) === "fullmoon") claimFullMoon(t);
+  renderSurprise(t);
+  return { weather: weatherToday(t), surprise: maybeSurprise(t), watered };
+}
+
+/* ---------------- collections: herbarium & bouquet (Task 9) ---------------- */
+// A bloom is pressed into the herbarium once, on the date it actually
+// bloomed (plantedAt + bloomAt) — never the date it was noticed, so a
+// flower that blooms while she is away keeps its true day. The bouquet
+// can only hold flowers she has actually grown: picks come from the
+// herbarium, at most three, plus one wish she writes herself. Sharing is
+// offline by construction: navigator.share, then the clipboard, and
+// nothing here ever touches the network.
+const BOUQUET_MAX = 3;
+const BOUQUET_EMOJI = { moonflower: "🌕", tulip: "🌷", lavender: "💜",
+  sunflower: "🌻", nightjasmine: "🤍", cherryblossom: "🌸" };
+const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function prettyDate(key) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key || "");
+  if (!m) return key || "";
+  return (+m[3]) + " " + MONTHS_SHORT[+m[2] - 1] + " " + m[1];
+}
+
+// Fill in Task 9 fields for states saved before this task existed.
+function ensureHerbariumFields() {
+  if (!state) return;
+  if (!state.herbarium || typeof state.herbarium !== "object") state.herbarium = {};
+}
+function ensureBouquetFields() {
+  if (!state) return;
+  if (!state.bouquet || typeof state.bouquet !== "object") state.bouquet = { blooms: [], wish: "" };
+  if (!Array.isArray(state.bouquet.blooms)) state.bouquet.blooms = [];
+  if (typeof state.bouquet.wish !== "string") state.bouquet.wish = "";
+}
+
+// Record a species' first bloom. Returns true only when a new entry was
+// added — a second bloom of the same species keeps the first date.
+function recordBloom(species, bloomAtMs) {
+  ensureHerbariumFields();
+  if (!PLANTS[species] || state.herbarium[species]) return false;
+  state.herbarium[species] = todayKey(bloomAtMs === undefined ? Date.now() : bloomAtMs);
+  saveState(state);
+  renderHerbarium();
+  return true;
+}
+
+// The herbarium lists all six species: bloomed ones with their first-bloom
+// date, the rest as "still waiting" — a collection to complete, never a
+// punishment for what hasn't bloomed yet.
+function renderHerbarium() {
+  const list = $("herbarium-list");
+  if (!list) return; // same guard pattern as renderHUD (old test harnesses)
+  ensureHerbariumFields();
+  list.innerHTML = "";
+  const found = Object.keys(state.herbarium).length;
+  const head = $("herbarium-head");
+  if (head) head.textContent = "Herbarium 🌸 " + found + " of " + Object.keys(PLANTS).length + " pressed";
+  for (const key of Object.keys(PLANTS)) {
+    const row = document.createElement("div");
+    row.className = "herb-row" + (state.herbarium[key] ? "" : " herb-locked");
+    const name = document.createElement("span");
+    name.className = "herb-name";
+    name.textContent = (BOUQUET_EMOJI[key] || "🌸") + " " + PLANTS[key].name;
+    const date = document.createElement("span");
+    date.className = "herb-date";
+    date.textContent = state.herbarium[key]
+      ? "first bloomed " + prettyDate(state.herbarium[key])
+      : "still waiting to bloom…";
+    row.appendChild(name);
+    row.appendChild(date);
+    list.appendChild(row);
+  }
+}
+
+// Pick or unpick a bloomed species for the bouquet. Only herbarium
+// species can be picked, and a bouquet holds three blooms at most.
+function toggleBouquet(species) {
+  ensureHerbariumFields();
+  ensureBouquetFields();
+  if (!PLANTS[species]) return false;
+  if (!state.herbarium[species]) { toast("That flower hasn't bloomed yet — grow it first 🌸"); return false; }
+  const at = state.bouquet.blooms.indexOf(species);
+  if (at >= 0) {
+    state.bouquet.blooms.splice(at, 1);
+  } else {
+    if (state.bouquet.blooms.length >= BOUQUET_MAX) { toast("A bouquet holds three blooms 💐"); return false; }
+    state.bouquet.blooms.push(species);
+  }
+  saveState(state);
+  renderBouquet();
+  return true;
+}
+
+// Her wish, saved as she types it (trimmed, capped at the input's length).
+function setBouquetWish(text) {
+  ensureBouquetFields();
+  state.bouquet.wish = String(text || "").trim().slice(0, 120);
+  saveState(state);
+  renderBouquet();
+  return state.bouquet.wish;
+}
+
+// The share text: the picked blooms, her wish, signed in Suhail's voice.
+// Null when nothing is picked — a wish alone is not a bouquet.
+function buildBouquet() {
+  ensureBouquetFields();
+  ensureHerbariumFields();
+  const blooms = state.bouquet.blooms.filter((s) => PLANTS[s]);
+  if (!blooms.length) return null;
+  const lines = ["💐 A bouquet from our garden, for my princess:"];
+  for (const s of blooms) lines.push((BOUQUET_EMOJI[s] || "🌸") + " " + PLANTS[s].name);
+  lines.push("");
+  if (state.bouquet.wish) lines.push("My wish: " + state.bouquet.wish);
+  lines.push("— with all my love, Suhail ji ♥");
+  return lines.join("\n");
+}
+
+// Share the bouquet: the native share sheet when it exists, the clipboard
+// when it doesn't (or when sharing fails), and a plain "ready" otherwise.
+// No fetch, no XHR, no network anywhere on this path.
+async function shareBouquet() {
+  const text = buildBouquet();
+  if (!text) { toast("Pick some blooms first 💐"); return null; }
+  const nav = (typeof navigator !== "undefined") ? navigator : null;
+  if (nav && typeof nav.share === "function") {
+    try {
+      await nav.share({ text });
+      toast("Shared with love 💐");
+      return "shared";
+    } catch (e) {
+      // Task 10: a cancelled share is her choice, not a failure — report
+      // it and stop; only an unavailable share sheet falls to the clipboard.
+      if (e && e.name === "AbortError") {
+        toast("Share cancelled — your bouquet is still here 💐");
+        return "cancelled";
+      }
+    }
+  }
+  if (nav && nav.clipboard && typeof nav.clipboard.writeText === "function") {
+    try {
+      await nav.clipboard.writeText(text);
+      toast("Copied — send it to Suhail ji 💐");
+      return "copied";
+    } catch (e) { /* fall through */ }
+  }
+  toast("Your bouquet is ready to share 💐");
+  return "ready";
+}
+
+function renderBouquet() {
+  const picks = $("bouquet-picks");
+  if (!picks) return; // same guard pattern as renderHUD (old test harnesses)
+  ensureHerbariumFields();
+  ensureBouquetFields();
+  picks.innerHTML = "";
+  const bloomed = Object.keys(PLANTS).filter((s) => state.herbarium[s]);
+  for (const s of bloomed) {
+    const b = document.createElement("button");
+    const picked = state.bouquet.blooms.includes(s);
+    b.className = "bouquet-pick" + (picked ? " picked" : "");
+    b.textContent = (BOUQUET_EMOJI[s] || "🌸") + " " + PLANTS[s].name;
+    b.setAttribute("aria-pressed", picked ? "true" : "false");
+    b.addEventListener("click", () => toggleBouquet(s));
+    picks.appendChild(b);
+  }
+  const wishInput = $("bouquet-wish");
+  // Task 10: never rewrite the input while she is typing in it — the
+  // trim-and-write-back moved the cursor and ate trailing spaces.
+  if (wishInput && document.activeElement !== wishInput && wishInput.value !== state.bouquet.wish) {
+    wishInput.value = state.bouquet.wish || "";
+  }
+  const preview = $("bouquet-preview");
+  if (preview) {
+    const text = buildBouquet();
+    preview.textContent = text || "Pick up to three blooms from your herbarium, write a wish, and share it with Suhail ji 💐";
+  }
+  const shareBtn = $("bouquet-share");
+  if (shareBtn) shareBtn.disabled = state.bouquet.blooms.length === 0;
+}
+
+/* ---------------- milestone letters (Task 10) ---------------- */
+// Season 2 letters from Suhail, days 7/14/21/27 — drafted in Task 10 in
+// Suhail's voice, verbatim from the plan file, for Sohel's approval.
+// Season 1's pattern: locked until their day, mailbox flag rises while
+// one is unread, tapping the mailbox marks them read and jumps to them.
+function gardenDay() { return (state.dayCount || 0) + 1; } // 1-based: dayCount 0 is day 1
+function milestoneKeys() { return Object.keys(CONFIG.milestones).map(Number).sort((a, b) => a - b); }
+function milestoneUnlocked(day) {
+  if (isPreviewMode()) return true; // preview shows a mature garden
+  return gardenDay() >= day;
+}
+function unreadLetters() {
+  ensureLetterFields();
+  return milestoneKeys().filter((k) => milestoneUnlocked(k) && !state.lettersRead.includes(k));
+}
+function ensureLetterFields() {
+  if (!state) return;
+  if (!Array.isArray(state.lettersRead)) state.lettersRead = [];
+  if (!Array.isArray(state.lettersAnnounced)) state.lettersAnnounced = [];
+}
+function renderMailbox() {
+  const flag = $("mail-flag");
+  if (!flag) return; // same guard pattern as renderHUD (old test harnesses)
+  flag.style.transform = unreadLetters().length ? "rotate(0deg)" : "rotate(24deg)";
+}
+function renderLetters() {
+  const list = $("letters-list");
+  if (!list) return; // same guard pattern as renderHUD (old test harnesses)
+  ensureLetterFields();
+  list.innerHTML = "";
+  const head = $("letters-head");
+  const unread = unreadLetters().length;
+  if (head) head.textContent = unread ? "Letters from Suhail 💌 (" + unread + " new)" : "Letters from Suhail 💌";
+  for (const k of milestoneKeys()) {
+    const m = CONFIG.milestones[k], open = milestoneUnlocked(k);
+    const div = document.createElement("div");
+    div.className = "letter" + (open ? "" : " locked");
+    div.setAttribute("data-day", k);
+    const t = document.createElement("div"); t.className = "day";
+    t.textContent = open ? m.title : "🔒 Opens on day " + k;
+    div.appendChild(t);
+    if (open) {
+      const tx = document.createElement("div"); tx.className = "text";
+      tx.textContent = m.text; div.appendChild(tx);
+      div.setAttribute("tabindex", "0");
+      div.setAttribute("role", "button");
+      div.setAttribute("aria-label", "Letter from Suhail, day " + k + " — tap to mark it read");
+      const markRead = () => markLetterRead(k);
+      div.addEventListener("click", markRead);
+      div.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); markRead(); }
+      });
+    }
+    list.appendChild(div);
+  }
+}
+function markLetterRead(day) {
+  ensureLetterFields();
+  if (!milestoneUnlocked(day)) return false;
+  if (state.lettersRead.includes(day)) return false;
+  state.lettersRead.push(day);
+  saveState(state);
+  renderLetters();
+  renderMailbox();
+  // Task 11: the re-render rebuilds the list — put focus back on the row
+  // she just read, so a keyboard user does not land back at the top.
+  const list = $("letters-list");
+  const row = list && list.querySelector('[data-day="' + day + '"]');
+  if (row && typeof row.focus === "function") row.focus();
+  return true;
+}
+// A letter newly unlocked since the last open: an envelope flies to the
+// mailbox (Season 1's letterArrives) and a toast points at the mailbox.
+// Announced once per day — reopening the garden never re-flies it.
+function announceNewLetters() {
+  ensureLetterFields();
+  if (isPreviewMode()) return []; // preview is display-only: no envelope, no toast, nothing recorded
+  const newly = milestoneKeys().filter((k) => milestoneUnlocked(k) && !state.lettersAnnounced.includes(k));
+  if (!newly.length) return [];
+  newly.forEach((k) => state.lettersAnnounced.push(k));
+  saveState(state);
+  if (!REDUCED) newly.forEach((k, i) => setTimeout(letterArrives, 900 + i * 1100));
+  setTimeout(() => toast("💌 " + (newly.length > 1 ? newly.length + " letters" : "A letter") +
+    " from Suhail arrived — tap the mailbox!"), 1000);
+  return newly;
+}
+function letterArrives() {
+  const layer = $("fx-layer");
+  if (!layer) return;
+  const e = document.createElement("div");
+  e.className = "env-fly";
+  e.textContent = "✉️";
+  layer.appendChild(e);
+  setTimeout(() => e.remove(), 2400);
+}
+// Mailbox tap: marks every unlocked letter read and jumps to the letters.
+function openMailbox() {
+  ensureLetterFields();
+  milestoneKeys().filter((k) => milestoneUnlocked(k)).forEach((k) => {
+    if (!state.lettersRead.includes(k)) state.lettersRead.push(k);
+  });
+  saveState(state);
+  renderLetters();
+  renderMailbox();
+  const sec = $("letters");
+  if (sec && typeof sec.scrollIntoView === "function") sec.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+/* ---------------- music box lullaby (Task 10) ---------------- */
+// Season 1's proven pattern: saniya-theme.mp3 first (same file, relative
+// path), WebAudio music-box waltz fallback when the file is missing.
+let audioCtx = null, musicBus = null, musicTimer = null, musicPlaying = false;
+const NOTE_FREQ = { C5:523.25, D5:587.33, E5:659.25, F5:698.46, G5:783.99, A5:880.0, B5:987.77, C6:1046.5,
+                    G2:98.0, A2:110.0, C3:130.81, F2:87.31 };
+// a slow music-box waltz, written for Saniya
+const LULLABY = [
+  ["E5",1],["G5",1],["C6",1],
+  ["B5",1],["A5",1],["G5",1],
+  ["A5",1],["C6",1],["B5",1],
+  ["G5",2],["E5",1],
+  ["F5",1],["E5",1],["D5",1],
+  ["E5",1],["D5",1],["C5",1],
+  ["D5",1],["E5",1],["G5",1],
+  ["C6",2.5],[null,.5],
+];
+const BASSLINE = [
+  ["C3",3],["G2",3],["A2",3],["C3",3],
+  ["F2",3],["G2",3],["C3",3],["C3",3],
+];
+const BEAT = 0.5;
+function ensureAudio() {
+  if (audioCtx) return true;
+  const AC = (typeof window !== "undefined" && (window.AudioContext || window.webkitAudioContext))
+    || (typeof AudioContext !== "undefined" ? AudioContext : null);
+  if (!AC) return false;
+  try { audioCtx = new AC(); }
+  catch (e) { return false; }
+  musicBus = audioCtx.createGain();
+  const delay = audioCtx.createDelay(1); delay.delayTime.value = 0.34;
+  const fb = audioCtx.createGain(); fb.gain.value = 0.32;
+  const wet = audioCtx.createGain(); wet.gain.value = 0.35;
+  musicBus.connect(audioCtx.destination);
+  musicBus.connect(delay); delay.connect(fb); fb.connect(delay);
+  delay.connect(wet); wet.connect(audioCtx.destination);
+  return true;
+}
+function musicNote(freq, when, dur, vol, bright) {
+  const t = audioCtx.currentTime + when;
+  const o1 = audioCtx.createOscillator(), o2 = audioCtx.createOscillator();
+  const g = audioCtx.createGain(), g2 = audioCtx.createGain();
+  o1.type = "triangle"; o1.frequency.value = freq;
+  o2.type = "sine"; o2.frequency.value = freq * 2; g2.gain.value = bright ? 0.22 : 0.08;
+  o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(musicBus);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(vol || 0.2, t + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + Math.max(dur, 1.6));
+  o1.start(t); o2.start(t);
+  o1.stop(t + Math.max(dur, 1.7)); o2.stop(t + Math.max(dur, 1.7));
+}
+function playLullabyOnce() {
+  let when = 0.05;
+  LULLABY.forEach(([n, b]) => {
+    if (n) musicNote(NOTE_FREQ[n], when, b * BEAT, 0.2, true);
+    when += b * BEAT;
+  });
+  const end = when;
+  let bw = 0.05;
+  BASSLINE.forEach(([n, b]) => {
+    musicNote(NOTE_FREQ[n], bw, b * BEAT, 0.09, false);
+    bw += b * BEAT;
+  });
+  return Math.max(end, bw);
+}
+let musicMode = "mp3"; // falls back to "synth" if saniya-theme.mp3 is missing
+function setMusicIcon() {
+  const btn = $("music-btn");
+  if (!btn) return; // same guard pattern as renderHUD (old test harnesses)
+  const a = $("garden-audio");
+  const playing = musicMode === "mp3" ? (a ? !a.paused : false) : musicPlaying;
+  btn.textContent = playing ? "⏸" : "🎵";
+  btn.setAttribute("aria-label", playing ? "Pause music" : "Play music");
+}
+function toggleSynth() {
+  if (!ensureAudio()) { toast("Audio isn't supported here"); return; }
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  musicPlaying = !musicPlaying;
+  if (musicPlaying) {
+    const loop = () => {
+      if (!musicPlaying) return;
+      const total = playLullabyOnce();
+      musicTimer = setTimeout(loop, total * 1000 + 900);
+    };
+    loop();
+  } else clearTimeout(musicTimer);
+  setMusicIcon();
+}
+function toggleMusic() {
+  const a = $("garden-audio");
+  if (musicMode === "mp3" && a) {
+    if (a.paused) {
+      try {
+        const pr = a.play();
+        if (pr && pr.then) pr.then(setMusicIcon).catch(() => { musicMode = "synth"; toggleSynth(); });
+        else setMusicIcon();
+      } catch (e) { musicMode = "synth"; toggleSynth(); }
+    } else { a.pause(); setMusicIcon(); }
+  } else {
+    toggleSynth();
+  }
+}
+
+/* ---------------- scene (Task 3) ---------------- */
+const $ = (id) => document.getElementById(id);
+const SVGNS = "http://www.w3.org/2000/svg";
+const REDUCED = typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function svgEl(tag, attrs, parent) {
+  const el = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(el);
+  return el;
+}
+
+// Debug/preview hook, in keeping with Season 1's #preview hash:
+// #hour=21 forces the night palette, #hour=10 forces morning.
+function hourFromHash(h) {
+  const m = /hour=(\d{1,2})/.exec(h || "");
+  if (!m) return null;
+  const n = +m[1];
+  return (n >= 0 && n <= 23) ? n : null;
+}
+function periodForHour(h) {
+  if (h >= 5 && h < 8) return "dawn";
+  if (h >= 8 && h < 16) return "day";
+  if (h >= 16 && h < 19) return "dusk";
+  return "night"; // 19:00–04:59
+}
+function toast(msg) {
+  const t = $("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+// Render one soil-bed plot slot per unlocked plot (3 at level 1).
+// Plants themselves arrive in Task 4; Task 3 renders empty beds only.
+// Beds share one row and shrink as plots unlock (up to 9): a fixed 10px
+// gap keeps every bed inside the 400-wide viewBox with no overlap.
+// At n=3 this is bit-identical to the original layout (w=92, gap=31).
+function buildScene() {
+  const plots = $("plots");
+  plots.innerHTML = "";
+  const n = state.unlocked.plots;
+  const GAP = 10;
+  const w = Math.min(92, (400 - GAP * (n + 1)) / n);
+  const gap = (400 - n * w) / (n + 1);
+  const s = w / 92; // scale all bed geometry with the bed width
+  for (let i = 0; i < n; i++) {
+    const cx = gap + w / 2 + i * (w + gap);
+    const g = svgEl("g", { "class": "plot-slot", "data-plot": i, "data-species": "empty",
+      tabindex: "0", role: "button", "aria-label": "Bed " + (i + 1) + " — tap to tend it" }, plots);
+    g.addEventListener("click", () => selectPlot(i)); // Task 4: tap a bed to tend it
+    g.addEventListener("keydown", (e) => { // Task 10: keyboard bed selection
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectPlot(i); }
+    });
+    svgEl("ellipse", { cx: cx, cy: 408, rx: 46 * s, ry: Math.max(7, 13 * s), fill: "#7d5c3e" }, g);
+    svgEl("ellipse", { cx: cx - 4 * s, cy: 405, rx: 34 * s, ry: Math.max(5, 8 * s), fill: "#8f6d49", "class": "soil" }, g);
+    svgEl("circle", { cx: cx - 22 * s, cy: 404, r: Math.max(1, 2.2 * s), fill: "#a5875f" }, g);
+    svgEl("circle", { cx: cx + 18 * s, cy: 408, r: Math.max(1, 1.8 * s), fill: "#a5875f" }, g);
+    svgEl("rect", { x: cx + 30 * s, y: 384, width: 4, height: 20, rx: 2, fill: "#8a5a38" }, g);
+    svgEl("circle", { cx: cx + 32 * s, cy: 382, r: Math.max(2.5, 5 * s), fill: "#e8b64c" }, g);
+  }
+}
+
+function spawnFireflies(n) {
+  const layer = $("fx-layer");
+  layer.querySelectorAll(".firefly").forEach((f) => f.remove());
+  if (REDUCED) return; // respect prefers-reduced-motion: calm night, no drift
+  for (let i = 0; i < n; i++) {
+    const f = document.createElement("div");
+    f.className = "firefly";
+    f.style.left = (8 + Math.random() * 84) + "%";
+    f.style.top = (18 + Math.random() * 55) + "%";
+    f.style.animationDelay = (-Math.random() * 7) + "s";
+    layer.appendChild(f);
+  }
+}
+
+// Time of day drives the whole scene: morning bees + butterflies,
+// night moonlight + fireflies + stars, winter mist at dawn.
+function setTimeOfDay(hour) {
+  const h = hour !== undefined ? hour
+    : (hourFromHash(typeof location !== "undefined" ? location.hash : "") ?? new Date().getHours());
+  let period = periodForHour(h);
+  if (state.moonlight) period = "night"; // moonlight toggle forces night
+  const night = period === "night";
+  const skies = {
+    dawn: "linear-gradient(180deg, #ffc9de 0%, #ffe3c8 55%, #fff3dd 100%)",
+    day: "linear-gradient(180deg, #8fd4ff 0%, #cdeffb 55%, #f2fbff 100%)",
+    dusk: "linear-gradient(180deg, #ff9d6b 0%, #ffc98f 50%, #ffe9c4 100%)",
+    night: "linear-gradient(180deg, #10142e 0%, #232a52 55%, #3a3f66 100%)",
+  };
+  const bodies = { dawn: "#f7e3d3", day: "#f6ead9", dusk: "#f3d3b8", night: "#101736" };
+  const inks = { dawn: "#5c3d2e", day: "#5c3d2e", dusk: "#5c3d2e", night: "#f6e9ee" };
+  const wrap = $("scene-wrap");
+  wrap.style.background = skies[period];
+  wrap.dataset.period = period;
+  document.body.style.background = bodies[period];
+  document.body.style.color = inks[period];
+  $("night-veil").setAttribute("opacity", night ? 0.42 : period === "dusk" ? 0.08 : 0);
+  $("sun").style.display = night ? "none" : "";
+  $("moon").style.display = night ? "" : "none";
+  $("clouds").style.display = night ? "none" : "";
+  $("birds").style.display = night ? "none" : "";
+  $("sky-stars").style.display = night ? "" : "none";
+  $("bfly1").style.display = night ? "none" : "";
+  $("bfly2").style.display = night ? "none" : "";
+  $("bee1").style.display = night ? "none" : "";
+  $("mist").style.display = period === "dawn" ? "" : "none";
+  document.querySelectorAll(".lantern-glow").forEach((l) => { l.style.display = night ? "" : "none"; });
+  document.querySelectorAll(".cottage-window").forEach((w) => {
+    w.setAttribute("fill", night ? "#ffd97a" : "#8fa3b8");
+  });
+  if (night) spawnFireflies(14); else spawnFireflies(0);
+  return period;
+}
+
+function syncThemeBtn() {
+  const b = $("theme-btn");
+  b.textContent = state.moonlight ? "☀️" : "🌙";
+  b.setAttribute("aria-label", state.moonlight ? "Show daylight" : "Show moonlight");
+}
+function toggleMoonlight() {
+  state.moonlight = !state.moonlight;
+  saveState(state);
+  setTimeOfDay();
+  syncThemeBtn();
+  toast(state.moonlight ? "Moonlight on 🌙" : "Daylight returns ☀️");
+}
+function applyMotion() {
+  document.documentElement.classList.toggle("reduced-motion", REDUCED);
+}
+
+/* ---------------- boot (scene) ---------------- */
+// Guarded: the same script is also executed in node vm tests without a DOM.
+if (typeof document !== "undefined") {
+  applyMotion();
+  buildScene();
+  renderPlants();
+  renderCareBar();
+  // Daily loop (Task 5): day boundary first, then the overnight report,
+  // then the day's reveal + quests. The modal only opens when a bloom
+  // landed between opens (Task 10: the heading says so, honestly).
+  ensureDailyFields();
+  advanceDay();
+  const _overnight = overnightReport();
+  renderDailyCard();
+  renderQuests();
+  renderHUD();
+  renderPlotBuy();
+  renderShop();
+  renderDecorations();
+  renderHerbarium(); // Task 9: pressed blooms, first-bloom dates
+  renderBouquet(); // Task 9: bouquet builder + share
+  const _wish = $("bouquet-wish");
+  if (_wish) _wish.addEventListener("input", (e) => setBouquetWish(e.target.value));
+  const _share = $("bouquet-share");
+  if (_share) _share.addEventListener("click", () => shareBouquet());
+  renderLetters(); // Task 10: milestone letters from Suhail
+  renderMailbox(); // Task 10: flag rises while a letter is unread
+  announceNewLetters(); // Task 10: envelope flies when a letter newly unlocks
+  const _mb = $("mailbox");
+  if (_mb) {
+    _mb.addEventListener("click", openMailbox);
+    _mb.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openMailbox(); }
+    });
+  }
+  const _mu = $("music-btn");
+  if (_mu) _mu.addEventListener("click", toggleMusic);
+  setMusicIcon();
+  const _au = $("garden-audio");
+  if (_au) _au.addEventListener("error", () => { musicMode = "synth"; }, { once: true });
+  const _st = $("shop-toggle");
+  if (_st) _st.addEventListener("click", toggleShop);
+  if (_overnight.blooms.length) showOvernight(_overnight);
+  const _oc = $("overnight-close");
+  if (_oc) _oc.addEventListener("click", hideOvernight);
+  // Task 10: Escape closes the overnight modal (guarded: old test
+  // harnesses have no document.addEventListener).
+  if (typeof document.addEventListener === "function") {
+    document.addEventListener("keydown", (e) => { if (e && e.key === "Escape") hideOvernight(); });
+  }
+  setTimeOfDay();
+  syncThemeBtn();
+  applyTodayEvents(); // Task 8: today's weather, rain watering, surprise
+  $("theme-btn").addEventListener("click", toggleMoonlight);
+  // Preview/demo hook (Task 11): #preview, #demo=garden, or CONFIG.previewAll
+  // shows a mature garden in memory only — nothing is saved while preview
+  // is on (saveState is a no-op), so her real garden is never touched.
+  if (isPreviewMode()) {
+    state.unlocked.plots = 6;
+    state.unlocked.species = Object.keys(PLANTS);
+    state.level = 10; // preview: every level gate open
+    state.xp = LEVEL_XP[LEVEL_XP.length - 1];
+    state.unlocked.decorations = Object.keys(SHOP);
+    state.starlight = 500; // preview: enough to try the shop
+    state.plots = [freshPlot(), freshPlot(), freshPlot(), freshPlot(), freshPlot(), freshPlot()];
+    [["moonflower", 6], ["tulip", 4], ["lavender", 14], ["sunflower", 12], ["nightjasmine", 36], ["cherryblossom", 36]].forEach(([sp, ageH], i) => {
+      state.plots[i].species = sp;
+      state.plots[i].plantedAt = Date.now() - ageH * HOUR;
+      state.plots[i].lastCareAt = Date.now();
+    });
+    buildScene();
+    renderPlants();
+    renderCareBar();
+    renderHUD();
+    renderPlotBuy(); // preview sets level 10 + 6 beds — the button must re-render too
+    renderShop();
+    renderDecorations();
+    renderLetters();
+    renderMailbox();
+    toast("Preview mode — nothing is saved 👀");
+  }
+}
+
+</script>
+</body>
+</html>
