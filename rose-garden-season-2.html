@@ -11,6 +11,8 @@
     font-family: Georgia, serif; }
   #app { max-width: 560px; margin: 0 auto; padding: 20px 16px 40px; }
   header { text-align: center; }
+  #backup-row { display: flex; gap: 8px; justify-content: center; margin: 8px 0 2px; }
+  #backup-row .care-btn { font-size: 12px; padding: 7px 12px; }
   header h1 { font-size: 26px; margin: 4px 0 2px; }
   #for-line { font-size: 13px; font-style: italic; opacity: .8; }
 
@@ -233,6 +235,12 @@
     <h1>Our Garden — Season 2 🌙</h1>
     <div id="for-line">A living garden for my princess</div>
   </header>
+
+  <div id="backup-row">
+    <button id="backup-save" class="care-btn" type="button">💾 Save backup</button>
+    <button id="backup-restore" class="care-btn" type="button">📥 Restore backup</button>
+    <input type="file" id="backup-file" accept=".json,application/json" hidden>
+  </div>
 
   <div id="hud" aria-live="polite">
     <span id="hud-water"></span>
@@ -518,7 +526,7 @@ const S2_QUOTES = [
 
 const S2_LOVE_FACTS = [
 {t:"Love grows stronger with obstacles",x:"Psychologists call it the Romeo and Juliet effect: when love faces obstacles, feelings can intensify rather than fade. A love that is fought for is a love that is felt more deeply."},
-{t:"Why we stay",x:"Psychologist Caryl Rusbult's investment model says commitment grows from three things: how happy we are, how much we have invested, and how few tempting alternatives there are. Every shared day is another brick in the house."},
+{t:"Why we stay",x:"Commitment grows from three things: how happy we are together, everything we have built side by side, and choosing each other again every single day. Every shared day is another brick in the house."},
 {t:"Love makes you more you",x:"Arthur Aron's self-expansion theory says we fall for people who expand who we are — new ideas, new joys, new sides of ourselves. The right person doesn't complete you; they grow you."},
 {t:"The four horsemen",x:"John Gottman found four habits that predict trouble: criticism, contempt, defensiveness, and stonewalling. The good news is each has an antidote — and the strongest is simply turning toward each other with kindness."},
 {t:"The six-second kiss",x:"Gottman suggests a six-second kiss every day — long enough to actually feel it, short enough to never skip. Small rituals like this are how connection survives busy days."},
@@ -624,6 +632,74 @@ function isPreviewMode() {
   } catch (e) { return false; }
 }
 function saveState(s) { if (isPreviewMode()) return; store.save(s); }
+
+/* ---------- backup / restore (added 2026-11-14) ---------- */
+// Her whole garden lives in one localStorage key (STORE_KEY). If she ever
+// clears "cookies and site data", that key goes with it. These two buttons
+// let her save a copy as a file and put it back later. Nothing here touches
+// the Season 1 key, and restoring only replaces the in-memory state + the
+// Season 2 key, then re-renders everything. Preview mode is untouched:
+// saveState() already no-ops there, so a preview can never overwrite a
+// real garden, and export in preview only exports the preview state.
+function backupData() {
+  return { app: "our-garden-s2", version: 1, exportedAt: new Date().toISOString(), state: state };
+}
+function isValidBackupState(s) {
+  return s && typeof s === "object" && Array.isArray(s.plots)
+    && typeof s.water === "number" && typeof s.starlight === "number"
+    && typeof s.level === "number" && s.unlocked && typeof s.unlocked === "object";
+}
+function exportBackup() {
+  try {
+    const blob = new Blob([JSON.stringify(backupData(), null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    a.href = URL.createObjectURL(blob);
+    a.download = "our-garden-backup-" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast("Backup saved \uD83D\uDCBE");
+  } catch (e) { toast("Couldn't save the backup"); }
+}
+function rerenderAll() {
+  buildScene(); renderPlants(); renderCareBar(); renderHUD(); renderPlotBuy();
+  renderShop(); renderDecorations(); renderHerbarium(); renderBouquet();
+  renderDailyCard(); renderQuests(); renderLetters(); renderMailbox();
+  if (typeof setTimeOfDay === "function") setTimeOfDay();
+  if (typeof syncThemeBtn === "function") syncThemeBtn();
+}
+function importBackupFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      const s = parsed && parsed.state ? parsed.state : parsed;
+      if (!isValidBackupState(s)) { toast("That file isn't a garden backup"); return; }
+      state = s;
+      saveState(state);
+      rerenderAll();
+      toast("Garden restored \uD83C\uDF38");
+    } catch (e) { toast("Couldn't read that backup file"); }
+  };
+  reader.onerror = () => toast("Couldn't read that backup file");
+  reader.readAsText(file);
+}
+function wireBackupButtons() {
+  const saveBtn = $("backup-save");
+  if (saveBtn) saveBtn.addEventListener("click", exportBackup);
+  const restoreBtn = $("backup-restore");
+  const fileInput = $("backup-file");
+  if (restoreBtn && fileInput) {
+    restoreBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files && fileInput.files[0]) importBackupFile(fileInput.files[0]);
+      fileInput.value = "";
+    });
+  }
+}
 let state = loadState() || freshState();
 
 /* ---------------- plant engine (Task 4) ---------------- */
@@ -2363,6 +2439,7 @@ if (typeof document !== "undefined") {
   if (_share) _share.addEventListener("click", () => shareBouquet());
   renderLetters(); // Task 10: milestone letters from Suhail
   renderMailbox(); // Task 10: flag rises while a letter is unread
+  wireBackupButtons(); // backup/restore: Save + Restore buttons under the header
   announceNewLetters(); // Task 10: envelope flies when a letter newly unlocks
   const _mb = $("mailbox");
   if (_mb) {
